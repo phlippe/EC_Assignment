@@ -8,5 +8,14 @@ Variations of Parent Selection:
   * Linear ranking
   * Exponential ranking
 
+Implementing Selection Probabilities:
+* Roulette wheel algorithm
+* Stochastic universal sampling
+
 ## Survivor Selection
 Variations of Survivor Selection:
+* Replace Worst
+* Elitism
+* Round-robin tournament
+* (µ+𝜆) Selection 
+* (µ,𝜆) Selection 
