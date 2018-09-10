@@ -21,9 +21,10 @@ public abstract class Configuration
 	private Recombination myRecombination;
 	private ParentSelection myParentSelection;
 	private SurvivorSelection mySurvivorSelection;
+	private String name;
 
 	public Configuration(){
-
+		name = "";
 	}
 
 	protected void init(){
@@ -111,6 +112,14 @@ public abstract class Configuration
 			c_array[i] = c;
 		}
 		return new String(c_array);
+	}
+
+	public void setName(String name){
+		this.name = name;
+	}
+
+	public String getName(){
+		return name;
 	}
 
 }

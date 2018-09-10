@@ -31,27 +31,42 @@ public class ExampleConfig extends Configuration
 		init();
 	}
 
-	public ExampleConfig(int population_size, int number_recombinations, int parent_arity){
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity) {
+		this(population_size, number_recombinations, parent_arity, "");
+	}
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, String name){
 		this.population_size = population_size;
 		this.number_recombinations = number_recombinations;
 		this.parent_arity = parent_arity;
+		setName(name);
 		init();
 	}
 
 	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double[] variances){
+		this(population_size, number_recombinations, parent_arity, variances, "");
+	}
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double[] variances, String name){
 		this.population_size = population_size;
 		this.number_recombinations = number_recombinations;
 		this.parent_arity = parent_arity;
 		this.variances = variances;
+		setName(name);
 		init();
 	}
 
 	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v){
+		this(population_size, number_recombinations, parent_arity, v, "");
+	}
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v, String name) {
 		this.population_size = population_size;
 		this.number_recombinations = number_recombinations;
 		this.parent_arity = parent_arity;
 		variances = new double[1];
 		variances[0] = v;
+		setName(name);
 		init();
 	}
 

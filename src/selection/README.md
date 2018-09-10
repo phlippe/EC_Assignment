@@ -1,6 +1,8 @@
 # Selection
 
 ## Parent Selection
+Base class: (Parent)
+
 Variations of Parent Selection:
 * Fitness Proportional Selection (prob ~ fitness)
 * Sigma scaling (incorperating information about the mean fitness and standard deviation)

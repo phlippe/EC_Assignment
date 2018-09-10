@@ -99,7 +99,7 @@ public class EvolutionaryCycle
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		Date date = new Date();
 		new File("logs/").mkdirs();
-		String filename = "logs/log_" + dateFormat.format(date) + ".txt";
+		String filename = "logs/log_" + (myConfig.getName().length() == 0 ? "" : myConfig.getName() + "_") + dateFormat.format(date) + ".txt";
 		try (PrintWriter out = new PrintWriter(filename)) {
 			out.println("Date: " + (new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss")).format(date));
 			out.println("Evaluation class: " + TheOptimizers.evaluation_.getClass().getName());
