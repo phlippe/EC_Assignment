@@ -1,5 +1,6 @@
 package algorithm;
 
+import configuration.Configuration;
 import org.vu.contest.ContestSubmission;
 import org.vu.contest.ContestEvaluation;
 
@@ -9,28 +10,27 @@ import java.util.Properties;
 public class TheOptimizers
 		implements ContestSubmission
 {
-	Random rnd_;
-	ContestEvaluation evaluation_;
+	public static Random rnd_;
+	public static long rnd_seed;
+	static ContestEvaluation evaluation_;
     private int evaluations_limit_;
+    private Configuration config;
 	
 	public TheOptimizers()
 	{
 		rnd_ = new Random();
-	}
-
-	public static void main(String args[]){
-		System.out.println("Hello world");
-
 	}
 	
 	public void setSeed(long seed)
 	{
 		// Set seed of algorithms random process
 		rnd_.setSeed(seed);
+		rnd_seed = seed;
 	}
 
 	public void setEvaluation(ContestEvaluation evaluation)
 	{
+		System.out.println("Set evaluation "+evaluation);
 		// Set evaluation problem used in the run
 		evaluation_ = evaluation;
 		
@@ -51,23 +51,34 @@ public class TheOptimizers
             // Do sth else
         }
     }
+
+    public void setConfig(Configuration config){
+		this.config = config;
+	}
     
 	public void run()
 	{
 		// Run your algorithm here
         
         int evals = 0;
+        EvolutionaryCycle eval_cycle = new EvolutionaryCycle(config);
         // init population
         // calculate fitness
+		System.out.println("Run");
         while(evals<evaluations_limit_){
-            // Select parents
-            // Apply crossover / mutation operators
-            double child[] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-            // Check fitness of unknown fuction
-            Double fitness = (double) evaluation_.evaluate(child);
+            eval_cycle.run_single_cycle();
             evals++;
-            // Select survivors
+            if(evals % 10000 == 0){
+            	System.out.println("Evaluated " + evals + " steps");
+			}
         }
-
+        System.out.print("Best solution: ");
+        for(double v: eval_cycle.getBestSolution()){
+        	System.out.print(v + ", ");
+		}
+		System.out.println("");
+		System.out.println("Best fitness: "+eval_cycle.getBestFitness());
+		eval_cycle.logResults();
 	}
+
 }
