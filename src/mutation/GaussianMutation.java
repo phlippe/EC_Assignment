@@ -10,16 +10,27 @@ import algorithm.TheOptimizers;
 public class GaussianMutation extends Mutation
 {
 
+	private double prob;
 	private double variance;
 
 	public GaussianMutation(double variance){
+		this(variance, 1.0);
+	}
+
+	public GaussianMutation(double variance, double prob){
 		super();
 		this.variance = variance;
+		this.prob = prob;
 	}
 
 	public GaussianMutation(double variance, GeneTypes[] geneTypes){
+		this(variance, 1.0, geneTypes);
+	}
+
+	public GaussianMutation(double variance, double prob, GeneTypes[] geneTypes){
 		super(geneTypes);
 		this.variance = variance;
+		this.prob = prob;
 	}
 
 	@Override
@@ -27,8 +38,11 @@ public class GaussianMutation extends Mutation
 	{
 		for (int i = 0; i < genes.length; i++)
 		{
-			double change = TheOptimizers.rnd_.nextGaussian() * variance;
-			genes[i] += change;
+			if (TheOptimizers.rnd_.nextDouble() <= this.prob)
+			{
+				double change = TheOptimizers.rnd_.nextGaussian() * variance;
+				genes[i] += change;
+			}
 		}
 	}
 
@@ -39,6 +53,7 @@ public class GaussianMutation extends Mutation
 		s += "Mutation algorithm: Adding a small value from a gaussian distribution to every gene.\n";
 		s += "Parameters: \n";
 		s += "\tσ = " + variance + "\n";
+		s += "\tprob = " + prob + "\n";
 		return s;
 	}
 
