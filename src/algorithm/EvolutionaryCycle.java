@@ -50,7 +50,7 @@ public class EvolutionaryCycle
 	}
 
 	private void initialize(){
-		population.initialize(genoRepresentation, new RandomGenoInitializer());
+		population.initialize(genoRepresentation, myConfig.getGenoInitializer(), myConfig.getAddParamsInitializer());
 		for(int i=0;i<population.size();i++){
 			if(TheOptimizers.evaluation_ != null)
 			{

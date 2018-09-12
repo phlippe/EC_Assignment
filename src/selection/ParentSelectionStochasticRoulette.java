@@ -8,6 +8,16 @@ import algorithm.TheOptimizers;
 public class ParentSelectionStochasticRoulette extends ParentSelectionStochastic
 {
 
+	private boolean allowParentTwice;
+
+	public ParentSelectionStochasticRoulette(){
+		allowParentTwice = false;
+	}
+
+	public ParentSelectionStochasticRoulette(boolean allowParentTwice){
+		this.allowParentTwice = allowParentTwice;
+	}
+
 	public void randomlySelectElements(int[][] parent_indices, double[] ranges, double sum){
 		double random_val;
 		boolean parent_twice;
@@ -26,7 +36,7 @@ public class ParentSelectionStochasticRoulette extends ParentSelectionStochastic
 					for(k=0;k<j;k++){
 						parent_twice = parent_twice || (parent_indices[i][k] == parent_indices[i][j]);
 					}
-				} while (parent_twice);
+				} while (parent_twice && !allowParentTwice);
 			}
 		}
 	}

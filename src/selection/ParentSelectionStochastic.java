@@ -29,7 +29,7 @@ public abstract class ParentSelectionStochastic
 	public String getStochasticDescription(){
 		String s = "";
 		s += "\t Stochastic class: " + this.getClass().getName() + "\n";
-		s += "\t Stochastic method: " + "\n";
+		s += "\t Stochastic method: " + getStochasticMethodDescription() + "\n";
 		return s;
 	}
 
