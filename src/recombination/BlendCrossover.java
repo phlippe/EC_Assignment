@@ -7,15 +7,16 @@ import individuals.Population;
 import algorithm.TheOptimizers;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by rick on 12.09.18.
  */
-public class WholeArithmeticRecombination extends Recombination
+public class BlendCrossover extends Recombination
 {
     private double alpha;
 
-    public WholeArithmeticRecombination(double alpha){
+    public BlendCrossover(double alpha){
         this.alpha = alpha;
 
     }
@@ -28,12 +29,13 @@ public class WholeArithmeticRecombination extends Recombination
 //            System.out.println(index_child);
             for (int index_gene = 0; index_gene < number_param_genes; index_gene++) {//going over all genes
                 double sum_parent_gene = 0;
+                double gamma = (1-2*alpha)* TheOptimizers.rnd_.nextDouble()-alpha;
                 for (int index_parent = 0; index_parent < number_parents; index_parent++) {//going over all parents
-                    if (index_child == index_parent) {
-                        sum_parent_gene =+ alpha * parent_genes.get(index_parent)[index_gene]; //the ith child gets the alpha
+                    if (index_child == index_parent){
+                        sum_parent_gene =+ gamma * parent_genes.get(index_parent)[index_gene]; //the ith child gets the alpha
                     }
                     else {
-                        sum_parent_gene =+ (1 - alpha) * parent_genes.get(index_parent)[index_gene] / (number_parents - 1); //average of all gene of each parent
+                        sum_parent_gene =+ (1 - gamma) * parent_genes.get(index_parent)[index_gene] / (number_parents - 1); //average of all gene of each parent
                     }
                 }
 //                System.out.println(sum_parent_gene);
@@ -46,7 +48,7 @@ public class WholeArithmeticRecombination extends Recombination
     @Override
     public String getRecombinationDescription(){
         String s = "";
-        s += "Recombination process: Whole Arithmetic Recombination";
+        s += "Recombination process: Blend Crossover";
         return s;
     }
 }
