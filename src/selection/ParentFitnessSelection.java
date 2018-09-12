@@ -9,6 +9,11 @@ import individuals.Population;
 public class ParentFitnessSelection extends ParentSelection
 {
 
+	public ParentFitnessSelection(ParentSelectionStochastic stochastic)
+	{
+		super(stochastic);
+	}
+
 	@Override
 	void prepareSelection(Population population)
 	{
