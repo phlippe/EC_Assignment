@@ -25,7 +25,7 @@ public class RandomGenoInitializer extends GenoInitializer
 	public void initializeArray(double[] array)
 	{
 		for(int i=0;i<array.length;i++){
-			array[i] = TheOptimizers.rnd_.nextDouble() * (upper_limit + lower_limit) - lower_limit;
+			array[i] = TheOptimizers.rnd_.nextDouble() * (upper_limit - lower_limit) + lower_limit;
 		}
 	}
 }
