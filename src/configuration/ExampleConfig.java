@@ -1,16 +1,22 @@
 package configuration;
 
+import algorithm.TheOptimizers;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
 import individuals.GenoRepresentation;
+import individuals.Individual;
+import initialization.GenoInitializer;
+import initialization.RandomGenoInitializer;
 import mutation.EvovleMutation;
 import mutation.GaussianMutation;
+import mutation.MultiSigma;
 import mutation.Mutation;
 import recombination.RandomRecombination;
 import recombination.Recombination;
 import selection.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by phlippe on 08.09.18.
@@ -85,20 +91,21 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected GenoRepresentation createRepresentation()
 	{
-		GenoRepresentation genoRepresentation = new BoundRepresentation(10, new int[0], new GeneTypes[0], -5, 5);
+		int num[] = {10};
+		GeneTypes [] gene = {GeneTypes.MULTI_SIGMA};
+		GenoRepresentation genoRepresentation = new BoundRepresentation(10, num, gene, -5, 5);
 		return genoRepresentation;
 	}
 
 	@Override
 	protected ArrayList<Mutation> createMutationOperators()
 	{
-			double [] sigmutations;
-			sigmutations = new EvovleMutation(sigvaraince));
-
+		GeneTypes[] multi = {GeneTypes.MULTI_SIGMA};
+		GeneTypes[] genes = {GeneTypes.OPT_GENES};
 		ArrayList<Mutation> mutations = new ArrayList<>();
-		for(double v: sigmutations) {
-			mutations.add(new GaussianMutation(v));
-		}
+		mutations.add(new EvovleMutation(multi));
+		mutations.add(new MultiSigma(genes));
+
 		return mutations;
 	}
 
@@ -122,6 +129,20 @@ public class ExampleConfig extends Configuration
 	{
 		SurvivorSelection survivorSelection = new SurvivorFitnessSelection();
 		return survivorSelection;
+	}
+
+	@Override
+	protected GenoInitializer createGenoInitializer() {
+		GenoInitializer genoinit = new RandomGenoInitializer();
+		return genoinit;
+	}
+
+	@Override
+	protected ArrayList<GenoInitializer> createAddParamsInitializer() {
+
+		ArrayList<GenoInitializer> addparam = new ArrayList<>();
+		addparam.add(new RandomGenoInitializer(0.01,0.01));
+		return addparam;
 	}
 
 	@Override
