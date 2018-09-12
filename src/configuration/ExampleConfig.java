@@ -7,10 +7,7 @@ import mutation.GaussianMutation;
 import mutation.Mutation;
 import recombination.RandomRecombination;
 import recombination.Recombination;
-import selection.ParentFitnessSelection;
-import selection.ParentSelection;
-import selection.SurvivorFitnessSelection;
-import selection.SurvivorSelection;
+import selection.*;
 
 import java.util.ArrayList;
 
@@ -97,7 +94,8 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected ParentSelection createParentSelection()
 	{
-		ParentSelection parentSelection = new ParentFitnessSelection();
+		ParentSelectionStochastic parentSelectionStochastic = new ParentSelectionStochasticRoulette();
+		ParentSelection parentSelection = new ParentFitnessSelection(parentSelectionStochastic);
 		return parentSelection;
 	}
 
