@@ -6,9 +6,10 @@ package individuals;
 public enum GeneTypes
 {
 
-	OPT_GENES,
+	OPT_GENES, // x1, x2, .., x10
 	SINGLE_SIGMA,
 	MULTI_SIGMA,
-	ROTATION_ALPHA
+	ROTATION_ALPHA,
+	ROTATION_MULTI_SIGMA
 
 }

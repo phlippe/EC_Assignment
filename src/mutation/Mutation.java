@@ -34,11 +34,11 @@ public abstract class Mutation implements ConfigurableObject
 					continue;
 				}
 			}
-			applyMutation(genes);
+			applyMutation(genes, individual);
 		}
 	}
 
-	abstract void applyMutation(double[] genes);
+	abstract void applyMutation(double[] genes, Individual individual);
 
 	public String getDescription(){
 		String s = "";

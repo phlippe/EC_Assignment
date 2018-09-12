@@ -105,8 +105,12 @@ public class Individual
 		genes = g;
 	}
 
-	public void setAddParams(double[] p){
+	public void addAdditionalParams(double[] p){
 		add_params.add(p);
+	}
+
+	public void setAddParams(ArrayList<double[]> params){
+		add_params = params;
 	}
 
 	public double getAge(){

@@ -34,7 +34,7 @@ public class GaussianMutation extends Mutation
 	}
 
 	@Override
-	void applyMutation(double[] genes)
+	void applyMutation(double[] genes, Individual individual)
 	{
 		for (int i = 0; i < genes.length; i++)
 		{

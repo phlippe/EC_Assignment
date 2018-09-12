@@ -14,17 +14,17 @@ public class TestAlgo
 {
 
 	public static void main(String args[]){
-//		ExampleConfig config = new ExampleConfig(100, 10, 2, 0.4);
+		ExampleConfig config = new ExampleConfig(100, 10, 2, 0.2);
 		ContestEvaluation eval = createEval(EvalType.SCHAFFERS);
-//		executeExperiment(config, eval);
+		executeExperiment(config, eval);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
 //						2);
-		SwipeFunction func = (double swipe_val) -> (new ExampleConfig(100,
-				10,
-				2, swipe_val, "swipe_" + swipe_val));
-		swipeExperiment(eval, func, 0.1, 0.1, 10, false);
+//		SwipeFunction func = (double swipe_val) -> (new ExampleConfig(100,
+//				10,
+//				2, swipe_val, "swipe_" + swipe_val));
+//		swipeExperiment(eval, func, 0.1, 0.1, 10, false);
 	}
 
 	private static void executeExperiment(Configuration config, ContestEvaluation eval){
