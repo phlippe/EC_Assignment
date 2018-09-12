@@ -3,6 +3,7 @@ package configuration;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
 import individuals.GenoRepresentation;
+import mutation.EvovleMutation;
 import mutation.GaussianMutation;
 import mutation.Mutation;
 import recombination.RandomRecombination;
@@ -21,6 +22,8 @@ public class ExampleConfig extends Configuration
 	private int number_recombinations = 10;
 	private int parent_arity = 2;
 	private double[] variances = {0.05};
+	private double variance = 0.05;
+	private double sigvaraince = 0.05;
 
 
 	public ExampleConfig(){
@@ -53,6 +56,7 @@ public class ExampleConfig extends Configuration
 		init();
 	}
 
+
 	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v){
 		this(population_size, number_recombinations, parent_arity, v, "");
 	}
@@ -67,6 +71,17 @@ public class ExampleConfig extends Configuration
 		init();
 	}
 
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v, double sigv, String name) {
+		this.population_size = population_size;
+		this.number_recombinations = number_recombinations;
+		this.parent_arity = parent_arity;
+		this.variance = v;
+		this.sigvaraince = sigv;
+		setName(name);
+		init();
+	}
+
 	@Override
 	protected GenoRepresentation createRepresentation()
 	{
@@ -77,8 +92,11 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected ArrayList<Mutation> createMutationOperators()
 	{
+			double [] sigmutations;
+			sigmutations = new EvovleMutation(sigvaraince));
+
 		ArrayList<Mutation> mutations = new ArrayList<>();
-		for(double v: variances){
+		for(double v: sigmutations) {
 			mutations.add(new GaussianMutation(v));
 		}
 		return mutations;
