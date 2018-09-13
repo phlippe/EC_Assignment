@@ -14,7 +14,7 @@ public class TestAlgo
 {
 
 	public static void main(String args[]){
-		ExampleConfig config = new ExampleConfig(100, 10, 2,  0.2, 0.1);
+		ExampleConfig config = new ExampleConfig(100, 10, 2);
 		ContestEvaluation eval = createEval(EvalType.SCHAFFERS);
 		executeExperiment(config, eval);
 

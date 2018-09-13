@@ -141,7 +141,7 @@ public class ExampleConfig extends Configuration
 	protected ArrayList<GenoInitializer> createAddParamsInitializer() {
 
 		ArrayList<GenoInitializer> addparam = new ArrayList<>();
-		addparam.add(new RandomGenoInitializer(0.01,0.01));
+		addparam.add(new RandomGenoInitializer(0.5,0.5));
 		return addparam;
 	}
 
