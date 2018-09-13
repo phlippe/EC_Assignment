@@ -3,10 +3,14 @@ package configuration;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
 import individuals.GenoRepresentation;
+import initialization.GenoInitializer;
+import initialization.RandomGenoInitializer;
 import mutation.GaussianMutation;
 import mutation.Mutation;
+import recombination.BlendCrossover;
 import recombination.RandomRecombination;
 import recombination.Recombination;
+import recombination.SimulatedBinaryCrossover;
 import selection.*;
 
 import java.util.ArrayList;
@@ -70,7 +74,9 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected GenoRepresentation createRepresentation()
 	{
-		GenoRepresentation genoRepresentation = new BoundRepresentation(10, new int[0], new GeneTypes[0], -5, 5);
+		int[] num = {1};
+		GeneTypes[] gene = {GeneTypes.MULTI_SIGMA};
+		GenoRepresentation genoRepresentation = new BoundRepresentation(10, num, gene, -5, 5);
 		return genoRepresentation;
 	}
 
@@ -87,15 +93,15 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected Recombination createRecombination()
 	{
-		Recombination recombination = new RandomRecombination();
+		Recombination recombination = new SimulatedBinaryCrossover(1.0);//new RandomRecombination();//new BlendCrossover(0.5);
 		return recombination;
 	}
 
 	@Override
 	protected ParentSelection createParentSelection()
 	{
-		ParentSelectionStochastic parentSelectionStochastic = new ParentSelectionStochasticRoulette();
-		ParentSelection parentSelection = new ParentFitnessSelection(parentSelectionStochastic);
+		ParentSelectionStochastic parentSelectionStochastic = new ParentSelectionStochasticUniversal();
+		ParentSelection parentSelection = new ParentSigmaScalingSelection(parentSelectionStochastic, 2);
 		return parentSelection;
 	}
 
@@ -104,6 +110,20 @@ public class ExampleConfig extends Configuration
 	{
 		SurvivorSelection survivorSelection = new SurvivorFitnessSelection();
 		return survivorSelection;
+	}
+
+	@Override
+	protected GenoInitializer createGenoInitializer()
+	{
+		return new RandomGenoInitializer();
+	}
+
+	@Override
+	protected ArrayList<GenoInitializer> createAddParamsInitializer()
+	{
+		ArrayList<GenoInitializer> a = new ArrayList<>();
+		a.add(new RandomGenoInitializer(0.5, 0.5));
+		return a;
 	}
 
 	@Override
