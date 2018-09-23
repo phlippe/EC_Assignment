@@ -1,6 +1,8 @@
 package configuration;
 
+import com.sun.tools.javah.Gen;
 import individuals.GenoRepresentation;
+import initialization.GenoInitializer;
 import mutation.Mutation;
 import selection.ParentSelection;
 import recombination.Recombination;
@@ -21,6 +23,8 @@ public abstract class Configuration
 	private Recombination myRecombination;
 	private ParentSelection myParentSelection;
 	private SurvivorSelection mySurvivorSelection;
+	private GenoInitializer genoInitializer;
+	private ArrayList<GenoInitializer> addParamsInitializer;
 	private String name;
 
 	public Configuration(){
@@ -33,6 +37,8 @@ public abstract class Configuration
 		myRecombination = createRecombination();
 		myParentSelection = createParentSelection();
 		mySurvivorSelection = createSurvivorSelection();
+		genoInitializer = createGenoInitializer();
+		addParamsInitializer = createAddParamsInitializer();
 	}
 
 	protected abstract GenoRepresentation createRepresentation();
@@ -44,6 +50,10 @@ public abstract class Configuration
 	protected abstract ParentSelection createParentSelection();
 
 	protected abstract SurvivorSelection createSurvivorSelection();
+
+	protected abstract GenoInitializer createGenoInitializer();
+
+	protected abstract ArrayList<GenoInitializer> createAddParamsInitializer();
 
 	public abstract int getPopulationSize();
 
@@ -69,6 +79,14 @@ public abstract class Configuration
 
 	public SurvivorSelection getSurvivorSelection(){
 		return mySurvivorSelection;
+	}
+
+	public GenoInitializer getGenoInitializer(){
+		return genoInitializer;
+	}
+
+	public ArrayList<GenoInitializer> getAddParamsInitializer(){
+		return addParamsInitializer;
 	}
 
 	public String toString(){

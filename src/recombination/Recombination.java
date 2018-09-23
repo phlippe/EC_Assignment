@@ -33,7 +33,7 @@ public abstract class Recombination implements ConfigurableObject
 		for(Individual p: parents){
 			parent_genes.add(p.getGenotype());
 			for(int i=0;i<repr.gene_types.length;i++){
-				parent_comb.get(i).add(p.getAdditionalParams(i));
+				parent_comb.get(i+1).add(p.getAdditionalParams(i));
 			}
 		}
 		for(int param_index=0;param_index<parent_comb.size();param_index++){
