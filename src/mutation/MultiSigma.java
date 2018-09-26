@@ -12,8 +12,6 @@ public class MultiSigma extends Mutation {
     }
 
 
-
-
     @Override
     void applyMutation(double[] genes, Individual individual) {
         double [] addparam = individual.getAdditionalParams(GeneTypes.MULTI_SIGMA);

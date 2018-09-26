@@ -5,35 +5,39 @@ import individuals.GeneTypes;
 import individuals.Individual;
 
 public class EvovleMutation extends Mutation {
-    //private double variance;
-    private double sigvariance;
-    private double[] addparam;
-    private double [] newsig;
+
+    private double standtau;
+    private double tau;
 
 
     public EvovleMutation(){
         super();
-       // this.variance = variance;
-        //this.sigvariance = sigvariance;
+        setTau(100,1);
     }
 
     public EvovleMutation(GeneTypes[] geneTypes){
+        this(geneTypes, 100, 1);
+    }
+
+    public EvovleMutation(GeneTypes[] geneTypes, int population_size, double scale_fac){
         super(geneTypes);
-        //this.variance = variance;
-        //this.sigvariance = sigvariance;
+        setTau(population_size, scale_fac);
+    }
+
+    private void setTau(int population_size, double scale_fac){
+        this.standtau = scale_fac / Math.sqrt(2. * population_size);
+        this.tau = scale_fac / Math.sqrt(2. * Math.sqrt(population_size));
     }
 
     @Override
     void applyMutation(double[] genes, Individual individual)
     {
-        this.addparam = individual.getAdditionalParams(GeneTypes.MULTI_SIGMA);
+        double[] addparam = individual.getAdditionalParams(GeneTypes.MULTI_SIGMA);
 
-        double standtau = 1 / Math.sqrt(2 * 100);
         double standardsig = TheOptimizers.rnd_.nextGaussian() * standtau;
 
         for (int i=0; i < addparam.length; i++)
         {
-            double tau = 1 / Math.sqrt(2 * Math.sqrt(100));
             double sig = TheOptimizers.rnd_.nextGaussian() * tau;
             addparam[i] = addparam[i] * Math.exp(sig + standardsig);
 
@@ -45,9 +49,8 @@ public class EvovleMutation extends Mutation {
     public String getMutationDescription()
     {
         String s = "";
-        s += "Mutation algorithm: Adding a small value from a gaussian distribution to every gene.\n";
-        s += "Parameters: \n";
-        s += "\tσ = " + sigvariance + "\n";
+        s += "Mutation algorithm: self-adaptation mutation (multi-sigma)\n";
+        s += "\ttau = " + this.tau + "\n\tstandtau = " + this.standtau + "\n";
         return s;
     }
 
