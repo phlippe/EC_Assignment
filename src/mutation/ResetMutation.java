@@ -47,7 +47,15 @@ public class ResetMutation extends Mutation {
 
     @Override
     public String getMutationDescription() {
-        String s = "Reset mutation";
+        String s = "Reset mutation\n";
+        s += "Hard value? " + this.hard_val + "\n";
+        if(this.hard_val)
+            s += "Init val: " + this.init_val + "\n";
+        else{
+            s += "Upper factor: " + this.upp_fac + "\n";
+            s += "Lower factor: " + this.low_fac + "\n";
+            s += "Exponential? " + this.exponential + "\n";
+        }
         return s;
     }
 }

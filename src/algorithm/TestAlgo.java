@@ -22,10 +22,10 @@ public class TestAlgo
 	public static void main(String args[]){
 		int config_index = Integer.parseInt(args[0]);
 		double reset_prob = Math.pow(2, config_index) * 0.00002;
-		ExampleConfig config = new ExampleConfig(100, 10, 2, 0.01, reset_prob, "");
+		ExampleConfig config = new ExampleConfig(1000, 100, 2, 0.01, reset_prob, "");
 		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 		//executeExperiment(null, eval);
-        swipeSeeds(config, eval, 100);
+        swipeSeeds(config, eval, 2);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
@@ -58,7 +58,7 @@ public class TestAlgo
 	    long startTime = System.currentTimeMillis();
 	    long lastPrintTime = -1;
 	    long currentTime;
-	    String summary = "";
+	    String summary = config.toString() + "\n\n";
 	    for(int i=0;i<number_of_runs;i++){
 	        loc_score = executeExperiment(config, eval, i);
 	        if(loc_score > best_score)
@@ -86,7 +86,7 @@ public class TestAlgo
             summary += "Seed " + i + ": " + loc_score + "\n";
         }
         mean_score /= number_of_runs;
-	    summary += "===================\nBest score: " + best_score + "\nWorst score: " + worst_score + "\nMean score: " + mean_score;
+	    summary += "==============================\nBest score: " + best_score + "\nWorst score: " + worst_score + "\nMean score: " + mean_score;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         Date date = new Date();
