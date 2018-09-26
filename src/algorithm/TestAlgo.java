@@ -26,11 +26,13 @@ public class TestAlgo
 		double reset_prob = 0;
 		// ExampleConfig config = new ExampleConfig(100 * (int)Math.pow(config_index + 1, 2), 10 * (int)Math.pow(config_index + 1, 2), 2, 0.01, reset_prob, "");
 		ConfigParams configParams = new ConfigParams(400, 40, 2);
-		configParams.setParentTournamentSize(5 * (config_index + 1));
+		configParams.setParentTournamentSize(2 * (config_index + 1));
+		configParams.setMutationMultiSigmaInit(0.01);
+		configParams.setName("tour_" + configParams.getParentTournamentSize());
 		StandardConfig config = new StandardConfig(configParams);
 		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 		//executeExperiment(null, eval);
-        swipeSeeds(config, eval, 20);
+        swipeSeeds(config, eval, 1000);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
@@ -96,7 +98,7 @@ public class TestAlgo
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         Date date = new Date();
         new File("logs/").mkdirs();
-        String filename = "logs/swipe_" + dateFormat.format(date) + ".txt";
+        String filename = "logs/swipe_" + (config.getName().length() == 0 ? "" : config.getName() + "_") + dateFormat.format(date) + ".txt";
         try (PrintWriter out = new PrintWriter(filename)) {
             out.println(summary);
         }

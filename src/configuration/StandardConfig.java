@@ -22,6 +22,7 @@ public class StandardConfig extends Configuration
 	public StandardConfig(ConfigParams params){
 		super();
 		this.params = params;
+		setName(this.params.getName());
 		init();
 	}
 
