@@ -25,11 +25,11 @@ public class TournamentSelection extends ParentSelection {
     public int[][] selectParent(Population population, int number_parent_pairs, int number_parents){
         ArrayList<Individual> FinalBatch=new ArrayList<>(number_parents);
         int[][] parent_indices=new int[number_parent_pairs][number_parents];
-        Random generator=new Random();
+
         for (int j=0;j<number_parents*number_parent_pairs;j++) {
             ArrayList<Individual> TournamentBatch = new ArrayList<>(k);
             for (int i = 0; i < k; i++) {
-                int selectedNum = generator.nextInt(population.size());
+                int selectedNum = TheOptimizers.rnd_.nextInt(population.size());
                 TournamentBatch.add(i, population.get(selectedNum));
             }
             TournamentBatch.sort(new Comparator<Individual>() {
