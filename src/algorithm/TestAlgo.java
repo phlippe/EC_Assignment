@@ -1,7 +1,9 @@
 package algorithm;
 
+import configuration.ConfigParams;
 import configuration.Configuration;
 import configuration.ExampleConfig;
+import configuration.StandardConfig;
 import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
@@ -21,11 +23,14 @@ public class TestAlgo
 
 	public static void main(String args[]){
 		int config_index = Integer.parseInt(args[0]);
-		double reset_prob = Math.pow(2, config_index) * 0.00002;
-		ExampleConfig config = new ExampleConfig(1000, 100, 2, 0.01, reset_prob, "");
+		double reset_prob = 0;
+		// ExampleConfig config = new ExampleConfig(100 * (int)Math.pow(config_index + 1, 2), 10 * (int)Math.pow(config_index + 1, 2), 2, 0.01, reset_prob, "");
+		ConfigParams configParams = new ConfigParams(400, 40, 2);
+		configParams.setParentTournamentSize(5 * (config_index + 1));
+		StandardConfig config = new StandardConfig(configParams);
 		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 		//executeExperiment(null, eval);
-        swipeSeeds(config, eval, 2);
+        swipeSeeds(config, eval, 20);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
