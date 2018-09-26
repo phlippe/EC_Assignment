@@ -1,6 +1,7 @@
 package algorithm;
 
 import configuration.Configuration;
+import configuration.ExampleConfig;
 import org.vu.contest.ContestSubmission;
 import org.vu.contest.ContestEvaluation;
 
@@ -15,6 +16,7 @@ public class TheOptimizers
 	static ContestEvaluation evaluation_;
     private int evaluations_limit_;
     private Configuration config;
+    private double best_score;
 	
 	public TheOptimizers()
 	{
@@ -45,9 +47,18 @@ public class TheOptimizers
         boolean isSeparable = Boolean.parseBoolean(props.getProperty("Separable"));
 
 		// Do sth with property values, e.g. specify relevant settings of your algorithm
-        if(isMultimodal){
-            // Do sth
+        if(isMultimodal && hasStructure){
+            // Schaffers
+			setConfig(new ExampleConfig(100, 10, 2, 0.5));
         }else{
+        	if(isMultimodal && !hasStructure){
+        		// Katsuura
+				setConfig(new ExampleConfig(1000, 100, 2, 0.01));
+			}
+			else{
+				//BentCigar
+				setConfig(new ExampleConfig(100, 10, 2, 0.01));
+			}
             // Do sth else
         }
     }
@@ -67,7 +78,7 @@ public class TheOptimizers
 		System.out.println("Run");
         while(evals<evaluations_limit_){
             eval_cycle.run_single_cycle();
-            evals++;
+            evals += config.getNumberOfRecombinations() * config.getParentArity();
             if(evals % 10000 == 0){
             	System.out.println("Evaluated " + evals + " steps");
 			}
@@ -79,6 +90,11 @@ public class TheOptimizers
 		System.out.println("");
 		System.out.println("Best fitness: "+eval_cycle.getBestFitness());
 		eval_cycle.logResults();
+		best_score = eval_cycle.getBestFitness();
+	}
+
+	public double getBestScore(){
+		return best_score;
 	}
 
 }

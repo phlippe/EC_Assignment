@@ -50,6 +50,7 @@ public class Individual
 		}
 	}
 
+
 	public double[] getGenotype(){
 		return genes;
 	}

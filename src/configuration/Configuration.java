@@ -1,6 +1,6 @@
 package configuration;
 
-import com.sun.tools.javah.Gen;
+
 import individuals.GenoRepresentation;
 import initialization.GenoInitializer;
 import mutation.Mutation;

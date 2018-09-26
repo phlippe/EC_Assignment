@@ -14,9 +14,9 @@ public class TestAlgo
 {
 
 	public static void main(String args[]){
-		ExampleConfig config = new ExampleConfig(100, 10, 2, 0.2);
-		ContestEvaluation eval = createEval(EvalType.SCHAFFERS);
-		executeExperiment(config, eval);
+		//ExampleConfig config = new ExampleConfig(100, 10, 2);
+		ContestEvaluation eval = createEval(EvalType.KATSUURA);
+		executeExperiment(null, eval);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
@@ -27,12 +27,18 @@ public class TestAlgo
 //		swipeExperiment(eval, func, 0.1, 0.1, 10, false);
 	}
 
-	private static void executeExperiment(Configuration config, ContestEvaluation eval){
+	private static double executeExperiment(Configuration config, ContestEvaluation eval){
+		return executeExperiment(config, eval, 1);
+	}
+
+	private static double executeExperiment(Configuration config, ContestEvaluation eval, long seed){
 		TheOptimizers a = new TheOptimizers();
-		a.setSeed(1);
+		a.setSeed(seed);
 		a.setEvaluation(eval);
-		a.setConfig(config);
+		if(config != null)
+			a.setConfig(config);
 		a.run();
+		return a.getBestScore();
 	}
 
 	private static void swipeExperiment(ContestEvaluation eval, SwipeFunction func, double start_val, double step_size,
