@@ -17,6 +17,7 @@ public class TheOptimizers
     private int evaluations_limit_;
     private Configuration config;
     private double best_score;
+    private static final boolean SILENT_RUN = true;
 	
 	public TheOptimizers()
 	{
@@ -32,7 +33,7 @@ public class TheOptimizers
 
 	public void setEvaluation(ContestEvaluation evaluation)
 	{
-		System.out.println("Set evaluation "+evaluation);
+		TheOptimizers.println("Set evaluation "+evaluation);
 		// Set evaluation problem used in the run
 		evaluation_ = evaluation;
 		
@@ -75,26 +76,43 @@ public class TheOptimizers
         EvolutionaryCycle eval_cycle = new EvolutionaryCycle(config);
         // init population
         // calculate fitness
-		System.out.println("Run");
+		TheOptimizers.println("Run");
         while(evals<evaluations_limit_){
             eval_cycle.run_single_cycle();
             evals += config.getNumberOfRecombinations() * config.getParentArity();
             if(evals % 10000 == 0){
-            	System.out.println("Evaluated " + evals + " steps");
+            	TheOptimizers.println("Evaluated " + evals + " steps");
 			}
         }
-        System.out.print("Best solution: ");
+        TheOptimizers.print("Best solution: ");
         for(double v: eval_cycle.getBestSolution()){
-        	System.out.print(v + ", ");
+        	TheOptimizers.print(v + ", ");
 		}
-		System.out.println("");
-		System.out.println("Best fitness: "+eval_cycle.getBestFitness());
-		eval_cycle.logResults();
+		TheOptimizers.println("");
+		TheOptimizers.println("Best fitness: "+eval_cycle.getBestFitness());
+		if(!SILENT_RUN)
+			eval_cycle.logResults();
 		best_score = eval_cycle.getBestFitness();
 	}
 
 	public double getBestScore(){
 		return best_score;
+	}
+	
+	public static void print(Object o){
+		if(!SILENT_RUN){
+			System.out.print(o);
+		}
+	}
+
+	public static void println(){
+		TheOptimizers.print("\n");
+	}
+	
+	public static void println(Object o){
+		if(!SILENT_RUN){
+			System.out.println(o);
+		}
 	}
 
 }

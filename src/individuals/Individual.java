@@ -1,5 +1,6 @@
 package individuals;
 
+import algorithm.TheOptimizers;
 import initialization.GenoInitializer;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class Individual
 
 	public double[] getAdditionalParams(int index){
 		if(index >= add_params.size() || index < 0){
-			System.out.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
+			TheOptimizers.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
 			//System.exit(1);
 		}
 		return add_params.get(index);
@@ -70,18 +71,18 @@ public class Individual
 	public double[] getAdditionalParams(GeneTypes type){
 		int index = myRepr.getParamPosition(type);
 		if(index < 0){
-			System.out.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
-			System.out.print("Implemented in current initialization: ");
+			TheOptimizers.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
+			TheOptimizers.print("Implemented in current initialization: ");
 			if(myRepr.gene_types.length == 0){
-				System.out.print("---");
+				TheOptimizers.print("---");
 			}
 			else{
 				for (GeneTypes implType : myRepr.gene_types)
 				{
-					System.out.print(implType.name() + ", ");
+					TheOptimizers.print(implType.name() + ", ");
 				}
 			}
-			System.out.println("");
+			TheOptimizers.println("");
 		}
 		return getAdditionalParams(index);
 	}

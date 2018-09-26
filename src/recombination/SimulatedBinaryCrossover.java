@@ -68,11 +68,11 @@ public class SimulatedBinaryCrossover
         SimulatedBinaryCrossover a = new SimulatedBinaryCrossover(1.0);
         a.applyRecombination(parent_genes, children, number_param_genes);
         for(int i=0;i<children.length;i++){
-            System.out.print("Child " + i + ": ");
+            TheOptimizers.print("Child " + i + ": ");
             for(int j=0;j<children[i].length;j++){
-                System.out.print(children[i][j] + ", ");
+                TheOptimizers.print(children[i][j] + ", ");
             }
-            System.out.println();
+            TheOptimizers.println("");
         }
     }
 }

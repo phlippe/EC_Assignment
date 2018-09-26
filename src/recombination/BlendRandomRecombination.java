@@ -67,14 +67,14 @@ public class BlendRandomRecombination extends Recombination
         BlendRandomRecombination rec = new BlendRandomRecombination(0.1);
         rec.applyRecombination(par_genes, child_genes, p1.length);
 
-        System.out.println("Child genes: ");
+        TheOptimizers.println("Child genes: ");
         for(int i=0;i<child_genes.length;i++){
-            System.out.print("[");
+            TheOptimizers.print("[");
             for(int j=0;j<child_genes[i].length;j++){
-                if(j > 0) System.out.print(", ");
-                System.out.print(child_genes[i][j]);
+                if(j > 0) TheOptimizers.print(", ");
+                TheOptimizers.print(child_genes[i][j]);
             }
-            System.out.println("]");
+            TheOptimizers.println("]");
         }
     }
 }

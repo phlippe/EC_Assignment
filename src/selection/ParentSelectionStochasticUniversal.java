@@ -77,7 +77,7 @@ public class ParentSelectionStochasticUniversal
 					break;
 			}
 			if(rand_pos >= 0){
-				System.out.println("ERROR (ParentSelectionStochasticUniversal): randomly shuffled indices could not find enough free space...");
+				TheOptimizers.println("ERROR (ParentSelectionStochasticUniversal): randomly shuffled indices could not find enough free space...");
 			}
 			shuffled_array[j] = array_to_shuffle[i];
 		}

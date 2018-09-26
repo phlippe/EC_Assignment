@@ -61,7 +61,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 					if(tournament_pos[c_index].get(cont_pos).obj.id == tournament_pos[c_index_2].get(cont_pos).obj.id){
 						int switch_index = findSwitchPosition(tournament_pos[c_index_2].get(cont_pos).obj.id, c_index_2);
 						if(switch_index == -1){
-							System.out.println("ERROR (SurvivorRoundRobinTournamentSelecion): Switch index was -1");
+							TheOptimizers.println("ERROR (SurvivorRoundRobinTournamentSelecion): Switch index was -1");
 						}
 						RandomObj<TournamentContestant> tmp = tournament_pos[c_index_2].get(switch_index);
 						tournament_pos[c_index_2].set(switch_index, tournament_pos[c_index_2].get(cont_pos));
@@ -188,28 +188,28 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 		opt.setSeed(1);
 		int population_size = 10;
 		Population p = new Population(population_size);
-		System.out.print("Population: ");
+		TheOptimizers.print("Population: ");
 		for(int i=0;i<population_size;i++){
 			Individual ind = new Individual();
 			ind.setFitness(i); // TheOptimizers.rnd_.nextDouble()*10
 			p.set(i, ind);
-			System.out.print(ind.getFitness() + ", ");
+			TheOptimizers.print(ind.getFitness() + ", ");
 		}
-		System.out.println();
+		TheOptimizers.println();
 		ArrayList<Individual> children = new ArrayList<>();
-		System.out.print("Children: ");
+		TheOptimizers.print("Children: ");
 		for(int i=0;i<2;i++){
 			Individual ind = new Individual();
 			ind.setFitness(TheOptimizers.rnd_.nextDouble()*10);
 			children.add(ind);
-			System.out.print(ind.getFitness() + ", ");
+			TheOptimizers.print(ind.getFitness() + ", ");
 		}
 		SurvivorRoundRobinTournamentSelection s = new SurvivorRoundRobinTournamentSelection(5);
 		s.prepareSelection(p, children);
-		System.out.println("Fitness of population: ");
+		TheOptimizers.println("Fitness of population: ");
 		for(int i=0;i<population_size;i++){
 			double rate = s.rateIndividual(p.get(i), false);
-			System.out.println(rate + ", ");
+			TheOptimizers.println(rate + ", ");
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package individuals;
 
+import algorithm.TheOptimizers;
 import initialization.GenoInitializer;
 
 import java.util.ArrayList;
@@ -22,11 +23,11 @@ public class Population
 
 	public Individual get(int index){
 		if(index < 0){
-			System.out.println("ERROR: Index smaller than 0 ("+index+").");
+			TheOptimizers.println("ERROR: Index smaller than 0 ("+index+").");
 			return null;
 		}
 		if(index >= myIndividuals.length){
-			System.out.println("ERROR: Index greater than array size of "+myIndividuals.length+" ("+index+").");
+			TheOptimizers.println("ERROR: Index greater than array size of "+myIndividuals.length+" ("+index+").");
 			return null;
 		}
 		return myIndividuals[index];
@@ -37,7 +38,7 @@ public class Population
 		if(individual.getFitness() > maxFitness){
 			maxFitness = individual.getFitness();
 			maxIndividual = individual;
-			System.out.println("Found new max fitness: "+individual.getFitness());
+			TheOptimizers.println("Found new max fitness: "+individual.getFitness());
 		}
 	}
 
@@ -60,14 +61,14 @@ public class Population
 	}
 
 	public void reevaluateMaxFitness(){
-		System.out.println("Reevaluating max fitness (before: "+maxFitness+")");
+		TheOptimizers.println("Reevaluating max fitness (before: "+maxFitness+")");
 		for(int i=0;i<myIndividuals.length;i++){
 			if(myIndividuals[i].getFitness() > maxFitness){
 				maxFitness = myIndividuals[i].getFitness();
 				maxIndividual = myIndividuals[i];
 			}
 		}
-		System.out.println("New max fitness: "+maxFitness);
+		TheOptimizers.println("New max fitness: "+maxFitness);
 	}
 
 	public Individual getMaxIndividual(){

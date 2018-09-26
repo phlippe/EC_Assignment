@@ -114,8 +114,8 @@ public class EvolutionaryCycle
 			out.println("\n"+myConfig.toString());
 		}
 		catch (Exception e){
-			System.out.println("Could not write results to file. Error message:");
-			System.out.println(e.getMessage());
+			TheOptimizers.println("Could not write results to file. Error message:");
+			TheOptimizers.println(e.getMessage());
 		}
 	}
 }
