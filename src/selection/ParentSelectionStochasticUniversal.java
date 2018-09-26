@@ -1,6 +1,6 @@
 package selection;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 
 /**
  * Created by phlippe on 12.09.18.
@@ -13,7 +13,7 @@ public class ParentSelectionStochasticUniversal
 		int[] shuffled_indices = randomlyShuffleIndices(ranges.length);
 		double[] shuffled_ranges = shuffleRanges(ranges, shuffled_indices);
 		int size_mating_pool = parent_indices.length * parent_indices[0].length;
-		double rand_start_number = TheOptimizers.rnd_.nextDouble() * sum / size_mating_pool;
+		double rand_start_number = player59.rnd_.nextDouble() * sum / size_mating_pool;
 		int[] flat_parent_indices = new int[size_mating_pool];
 		for(int i=0;i<size_mating_pool;i++){
 			double rand = rand_start_number + i * 1.0 / size_mating_pool;
@@ -33,7 +33,7 @@ public class ParentSelectionStochasticUniversal
 
 	// Testing shuffle methods
 //	public static void main(String args[]){
-//		new TheOptimizers().setSeed(1);
+//		new player59().setSeed(1);
 //		ParentSelectionStochasticUniversal a = new ParentSelectionStochasticUniversal();
 //		double[] ranges = {0.1, 0.3, 0.31, 0.5, 1.0}; // 0.2, 0.3, 0.1, 0.4
 //		int[][] parent_indices = new int[5][2];
@@ -69,7 +69,7 @@ public class ParentSelectionStochasticUniversal
 		int rand_pos;
 		int i, j;
 		for(i=array_to_shuffle.length-1;i>=0;i--){
-			rand_pos = TheOptimizers.rnd_.nextInt(i+1);
+			rand_pos = player59.rnd_.nextInt(i+1);
 			for(j=0;j<shuffled_array.length;j++){
 				if(shuffled_array[j] == Integer.MAX_VALUE)
 					rand_pos--;

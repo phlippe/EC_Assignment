@@ -15,8 +15,19 @@ public class TestAlgo
 
 	public static void main(String args[]){
 		ExampleConfig config = new ExampleConfig(100, 10, 2);
-		ContestEvaluation eval = createEval(EvalType.SCHAFFERS);
-		executeExperiment(config, eval);
+		ContestEvaluation eval = createEval(EvalType.KATSUURA);
+		double best_score = 0.0;
+		int best_seed = 0;
+		for(int i=0;i<100;i++){
+			System.out.println("Seed = "+i);
+			double s = executeExperiment(config, eval, i);
+			if(best_score < s){
+				best_score = s;
+				best_seed = i;
+			}
+		}
+		System.out.println("Best seed: " + best_seed + ", Best score: " + best_score);
+
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
@@ -27,12 +38,13 @@ public class TestAlgo
 //		swipeExperiment(eval, func, 0.1, 0.1, 10, false);
 	}
 
-	private static void executeExperiment(Configuration config, ContestEvaluation eval){
-		TheOptimizers a = new TheOptimizers();
-		a.setSeed(1);
+	private static double executeExperiment(Configuration config, ContestEvaluation eval, long seed){
+		player59 a = new player59();
+		a.setSeed(seed);
 		a.setEvaluation(eval);
-		a.setConfig(config);
+		//a.setConfig(config);
 		a.run();
+		return a.getBestScore();
 	}
 
 	private static void swipeExperiment(ContestEvaluation eval, SwipeFunction func, double start_val, double step_size,
@@ -44,7 +56,7 @@ public class TestAlgo
 			else
 				val = start_val * Math.pow(step_size, i);
 			Configuration new_config = func.swipeConfig(val);
-			Thread t = new Thread(()->executeExperiment(new_config, eval));
+			Thread t = new Thread(()->executeExperiment(new_config, eval,1));
 			t.start();
 		}
 	}

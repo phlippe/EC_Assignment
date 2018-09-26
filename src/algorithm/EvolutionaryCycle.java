@@ -1,23 +1,17 @@
 package algorithm;
 
 import configuration.Configuration;
-import individuals.GeneTypes;
 import individuals.GenoRepresentation;
 import individuals.Individual;
 import individuals.Population;
-import initialization.RandomGenoInitializer;
-import mutation.GaussianMutation;
 import mutation.Mutation;
 import selection.ParentSelection;
-import recombination.RandomRecombination;
 import recombination.Recombination;
 import selection.SurvivorSelection;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,9 +46,9 @@ public class EvolutionaryCycle
 	private void initialize(){
 		population.initialize(genoRepresentation, myConfig.getGenoInitializer(), myConfig.getAddParamsInitializer());
 		for(int i=0;i<population.size();i++){
-			if(TheOptimizers.evaluation_ != null)
+			if(player59.evaluation_ != null)
 			{
-				double fitness = (double) TheOptimizers.evaluation_.evaluate(population.get(i).getPhenotype());
+				double fitness = (double) player59.evaluation_.evaluate(population.get(i).getPhenotype());
 				population.get(i).setFitness(fitness);
 			}
 			else{
@@ -78,13 +72,17 @@ public class EvolutionaryCycle
 		}
 		// 4. Fitness evaluation
 		for(Individual child:children){
-			double fitness = (double) TheOptimizers.evaluation_.evaluate(child.getPhenotype());
+			double fitness = (double) player59.evaluation_.evaluate(child.getPhenotype());
 			child.setFitness(fitness);
 		}
 		// 5. Survivor selection
 		survivorSelection.selectSurvivors(population, children);
 		population.increaseAge();
 		number_cycles++;
+		if(number_cycles % 10000 == 0){
+			population.printStatistic();
+			System.exit(0);
+		}
 	}
 
 	public double[] getBestSolution(){
@@ -102,9 +100,9 @@ public class EvolutionaryCycle
 		String filename = "logs/log_" + (myConfig.getName().length() == 0 ? "" : myConfig.getName() + "_") + dateFormat.format(date) + ".txt";
 		try (PrintWriter out = new PrintWriter(filename)) {
 			out.println("Date: " + (new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss")).format(date));
-			out.println("Evaluation class: " + TheOptimizers.evaluation_.getClass().getName());
+			out.println("Evaluation class: " + player59.evaluation_.getClass().getName());
 			out.println("Evolution cycles: " + number_cycles);
-			out.println("Seed (randomness): " + TheOptimizers.rnd_seed);
+			out.println("Seed (randomness): " + player59.rnd_seed);
 			out.println("Best fitness: " + getBestFitness());
 			out.println("Best solution: ");
 			double[] best_solution = getBestSolution();

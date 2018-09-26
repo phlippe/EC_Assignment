@@ -37,7 +37,7 @@ public class Population
 		if(individual.getFitness() > maxFitness){
 			maxFitness = individual.getFitness();
 			maxIndividual = individual;
-			System.out.println("Found new max fitness: "+individual.getFitness());
+			//System.out.println("Found new max fitness: "+individual.getFitness());
 		}
 	}
 
@@ -78,6 +78,48 @@ public class Population
 		for(Individual i: myIndividuals){
 			i.increaseAge();
 		}
+	}
+
+	public void printStatistic(){
+		System.out.println("--------------------------------");
+		System.out.println("Population statistic");
+		System.out.println("--------------------------------");
+
+		System.out.print("Mean position: [");
+		double[] mean_pos = getMeanPosition();
+		for(int i=0;i<mean_pos.length;i++){
+			if(i > 0) System.out.print(", ");
+			System.out.print(mean_pos[i]);
+		}
+		System.out.println("]");
+		System.out.println("Mean distance: " + getMeanDistance(mean_pos));
+		System.out.println("--------------------------------");
+
+	}
+
+	private double[] getMeanPosition(){
+		double[] mean_pos = new double[myIndividuals[0].getGenotype().length];
+		double[] genes;
+		for(Individual i: myIndividuals){
+			genes = i.getGenotype();
+			for(int k=0;k<genes.length;k++)
+				mean_pos[k] += genes[k] / myIndividuals.length;
+		}
+		return mean_pos;
+	}
+
+	private double getMeanDistance(double[] mean_pos){
+		double mean_dist = 0.0;
+		double loc_dist;
+		double[] genes;
+		for(Individual i: myIndividuals){
+			genes = i.getGenotype();
+			loc_dist = 0.0;
+			for(int k=0;k<genes.length;k++)
+				loc_dist += Math.pow(mean_pos[k] - genes[k], 2);
+			mean_dist += Math.sqrt(loc_dist) / myIndividuals.length;
+		}
+		return mean_dist;
 	}
 
 }

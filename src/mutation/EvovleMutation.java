@@ -1,6 +1,6 @@
 package mutation;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import individuals.GeneTypes;
 import individuals.Individual;
 
@@ -29,12 +29,12 @@ public class EvovleMutation extends Mutation {
         this.addparam = individual.getAdditionalParams(GeneTypes.MULTI_SIGMA);
 
         double standtau = 1 / Math.sqrt(2 * 100);
-        double standardsig = TheOptimizers.rnd_.nextGaussian() * standtau;
+        double standardsig = player59.rnd_.nextGaussian() * standtau;
 
         for (int i=0; i < addparam.length; i++)
         {
             double tau = 1 / Math.sqrt(2 * Math.sqrt(100));
-            double sig = TheOptimizers.rnd_.nextGaussian() * tau;
+            double sig = player59.rnd_.nextGaussian() * tau;
             addparam[i] = addparam[i] * Math.exp(sig + standardsig);
 
         }

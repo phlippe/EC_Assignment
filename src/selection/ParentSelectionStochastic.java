@@ -1,7 +1,5 @@
 package selection;
 
-import algorithm.TheOptimizers;
-
 /**
  * Created by phlippe on 12.09.18.
  */

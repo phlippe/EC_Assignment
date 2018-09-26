@@ -1,8 +1,8 @@
 package mutation;
 
+import algorithm.player59;
 import individuals.GeneTypes;
 import individuals.Individual;
-import algorithm.TheOptimizers;
 
 /**
  * Created by phlippe on 07.09.18.
@@ -38,9 +38,9 @@ public class GaussianMutation extends Mutation
 	{
 		for (int i = 0; i < genes.length; i++)
 		{
-			if (TheOptimizers.rnd_.nextDouble() <= this.prob)
+			if (player59.rnd_.nextDouble() <= this.prob)
 			{
-				double change = TheOptimizers.rnd_.nextGaussian() * variance;
+				double change = player59.rnd_.nextGaussian() * variance;
 				genes[i] += change;
 			}
 		}

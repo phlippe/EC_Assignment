@@ -1,14 +1,11 @@
 package configuration;
 
-import algorithm.TheOptimizers;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
 import individuals.GenoRepresentation;
-import individuals.Individual;
 import initialization.GenoInitializer;
 import initialization.RandomGenoInitializer;
 import mutation.EvovleMutation;
-import mutation.GaussianMutation;
 import mutation.MultiSigma;
 import mutation.Mutation;
 import recombination.RandomRecombination;
@@ -16,7 +13,6 @@ import recombination.Recombination;
 import selection.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by phlippe on 08.09.18.

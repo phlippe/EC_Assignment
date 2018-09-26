@@ -1,6 +1,6 @@
 package selection;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 
 /**
  * Created by phlippe on 12.09.18.
@@ -23,14 +23,14 @@ public class ParentSelectionStochasticRoulette extends ParentSelectionStochastic
 		boolean parent_twice;
 		int i, j, k;
 		for(i=0;i<parent_indices.length;i++){
-			random_val = TheOptimizers.rnd_.nextDouble() * sum;
+			random_val = player59.rnd_.nextDouble() * sum;
 			// System.out.println("Sum: "+sum+", Random val: "+random_val);
 			parent_indices[i][0] = ParentSelectionStochastic.searchIndexOfRange(ranges, random_val);
 			for(j=1;j<parent_indices[i].length;j++)
 			{
 				do
 				{
-					random_val = TheOptimizers.rnd_.nextDouble() * sum;
+					random_val = player59.rnd_.nextDouble() * sum;
 					parent_indices[i][j] = ParentSelectionStochastic.searchIndexOfRange(ranges, random_val);
 					parent_twice = false;
 					for(k=0;k<j;k++){

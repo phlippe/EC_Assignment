@@ -1,11 +1,5 @@
 package recombination;
 
-import individuals.GeneTypes;
-import individuals.GenoRepresentation;
-import individuals.Individual;
-import individuals.Population;
-import algorithm.TheOptimizers;
-
 import java.util.ArrayList;
 
 /**

@@ -1,10 +1,8 @@
 package selection;
 
-import com.sun.org.apache.bcel.internal.generic.POP;
 import configuration.ConfigurableObject;
 import individuals.Individual;
 import individuals.Population;
-import algorithm.TheOptimizers;
 
 /**
  * Created by phlippe on 06.09.18.
