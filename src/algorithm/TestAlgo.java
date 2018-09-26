@@ -6,6 +6,12 @@ import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 /**
  * Created by phlippe on 07.09.18.
@@ -14,9 +20,12 @@ public class TestAlgo
 {
 
 	public static void main(String args[]){
-		//ExampleConfig config = new ExampleConfig(100, 10, 2);
+		int config_index = Integer.parseInt(args[0]);
+		double reset_prob = Math.pow(2, config_index) * 0.00002;
+		ExampleConfig config = new ExampleConfig(100, 10, 2, 0.01, reset_prob, "");
 		ContestEvaluation eval = createEval(EvalType.KATSUURA);
-		executeExperiment(null, eval);
+		//executeExperiment(null, eval);
+        swipeSeeds(config, eval, 100);
 
 //		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
 //						((int)Math.round(swipe_val)) / 10,
@@ -40,6 +49,56 @@ public class TestAlgo
 		a.run();
 		return a.getBestScore();
 	}
+
+	private static void swipeSeeds(Configuration config, ContestEvaluation eval, int number_of_runs){
+	    double best_score = 0.0;
+	    double mean_score = 0.0;
+	    double worst_score = Double.MAX_VALUE;
+	    double loc_score;
+	    long startTime = System.currentTimeMillis();
+	    long lastPrintTime = -1;
+	    long currentTime;
+	    String summary = "";
+	    for(int i=0;i<number_of_runs;i++){
+	        loc_score = executeExperiment(config, eval, i);
+	        if(loc_score > best_score)
+	            best_score = loc_score;
+	        if(loc_score < worst_score)
+	            worst_score = loc_score;
+	        mean_score += loc_score;
+	        currentTime = System.currentTimeMillis();
+	        if(i == 0 || i == number_of_runs - 1 || (currentTime - lastPrintTime) > 5 * 60000){
+	            System.out.println("==================================");
+	            System.out.println("Finished " + (i + 1) + " runs");
+	            System.out.println("Best score: " + best_score);
+                System.out.println("Worst score: " + worst_score);
+	            System.out.println("Mean score: " + (mean_score / (i + 1)));
+	            double expected_runtime = (currentTime - startTime) / (i + 1.0) * (number_of_runs - i - 1) / 1000.0;
+	            System.out.print("Expected runtime remaining: ");
+	            int minutes = 0;
+	            while(expected_runtime > 60){
+	                minutes++;
+	                expected_runtime-=60;
+                }
+                System.out.println(minutes + "min " + (int)Math.round(expected_runtime) + "s");
+	            lastPrintTime = currentTime;
+            }
+            summary += "Seed " + i + ": " + loc_score + "\n";
+        }
+        mean_score /= number_of_runs;
+	    summary += "===================\nBest score: " + best_score + "\nWorst score: " + worst_score + "\nMean score: " + mean_score;
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        Date date = new Date();
+        new File("logs/").mkdirs();
+        String filename = "logs/swipe_" + dateFormat.format(date) + ".txt";
+        try (PrintWriter out = new PrintWriter(filename)) {
+            out.println(summary);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
 
 	private static void swipeExperiment(ContestEvaluation eval, SwipeFunction func, double start_val, double step_size,
 										int number_steps, boolean exponential){
