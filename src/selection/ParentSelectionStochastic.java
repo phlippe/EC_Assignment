@@ -10,11 +10,11 @@ public abstract class ParentSelectionStochastic
 
 	public abstract void randomlySelectElements(int[][] parent_indices, double[] ranges, double sum);
 
-	protected static int searchIndexOfRange(double[] vals, double rand_val){
+	public static int searchIndexOfRange(double[] vals, double rand_val){
 		return ParentSelectionStochastic.searchIndexOfRange(vals, rand_val, 0, vals.length - 1);
 	}
 
-	protected static int searchIndexOfRange(double[] vals, double rand_val, int lower_bound, int upper_bound){
+	public static int searchIndexOfRange(double[] vals, double rand_val, int lower_bound, int upper_bound){
 		if(upper_bound == lower_bound)
 			return upper_bound;
 
