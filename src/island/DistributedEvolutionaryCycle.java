@@ -103,9 +103,28 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
             Population island_pop = islands.get(island_index).getPopulation();
             switch(myParams.getExchangeType()){
                 case BEST:
-                    //TODO: IMPLEMENT THIS
-                    for(int no_ind=0;no_ind<myParams.getNoIndividualExchange();no_ind++){
-                        individual_index[island_index][no_ind] = -1;
+                    double[] best_fitness = new double[myParams.getNoIndividualExchange()];
+                    for(int i=0;i<best_fitness.length;i++)
+                        best_fitness[i] = -1;
+
+                    for(int no_ind=0;no_ind<island_pop.size();no_ind++){
+                        for(int i=best_fitness.length-1;i>=-1;i--){
+                            if(i == -1 || best_fitness[i] > island_pop.get(no_ind).getFitness()){
+                                if(i == best_fitness.length - 1)
+                                    break;
+                                else{
+                                    if(i == -1)
+                                        i = 0;
+                                    for(int j=best_fitness.length-1;j>i;j--){
+                                        best_fitness[j] = best_fitness[j - 1];
+                                        individual_index[island_index][j] = individual_index[island_index][j - 1];
+                                    }
+                                    best_fitness[i] = island_pop.get(no_ind).getFitness();
+                                    individual_index[island_index][i] = no_ind;
+                                    break;
+                                }
+                            }
+                        }
                     }
                     break;
                 case RANDOM:
