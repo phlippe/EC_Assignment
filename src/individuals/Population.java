@@ -97,11 +97,7 @@ public class Population
 		double loc_dist;
 		double[] genes;
 		for(Individual i: myIndividuals){
-			genes = i.getGenotype();
-			loc_dist = 0.0;
-			for(int k=0;k<genes.length;k++)
-				loc_dist += Math.pow(mean_pos[k] - genes[k], 2);
-			mean_dist += Math.sqrt(loc_dist) / myIndividuals.length;
+			mean_dist += i.getDistance(mean_pos);
 		}
 		return mean_dist;
 	}

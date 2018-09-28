@@ -70,27 +70,28 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
                 individuals[i][j] = islands.get(i).getPopulation().get(j);
 
         int exchange_island;
-        switch(myParams.getTopologyType()){
-            case RING:
-                for(int island_index=0;island_index<islands.size();island_index++){
-                    exchange_island = (island_index == 0 ? islands.size() : island_index) - 1;
-                    for(int ind_index=0;ind_index<individual_index[island_index].length;ind_index++){
-                        islands.get(exchange_island).getPopulation().set(individual_index[exchange_island][ind_index], individuals[island_index][ind_index]);
-                    }
-                }
-                break;
-            case COMPLETE:
-                for(int island_index=0;island_index<islands.size();island_index++){
-                    for(int ind_index=0;ind_index<individual_index[island_index].length;ind_index++){
-                        exchange_island = (island_index + ind_index) % (islands.size() - 1);
-                        if(exchange_island >= island_index)
-                            exchange_island++;
-                        islands.get(exchange_island).getPopulation().set(individual_index[exchange_island][ind_index], individuals[island_index][ind_index]);
-                    }
-                }
-                break;
+        for(int island_index=0;island_index<islands.size();island_index++){
+            for(int ind_index=0;ind_index<individual_index[island_index].length;ind_index++){
+                exchange_island = getExchangeIsland(island_index, ind_index);
+                islands.get(exchange_island).getPopulation().set(individual_index[exchange_island][ind_index], individuals[island_index][ind_index]);
+            }
         }
         TheOptimizers.println("Finished");
+    }
+
+    private int getExchangeIsland(int island_index, int ind_index){
+        int exchange_island = -1;
+        switch(myParams.getTopologyType()){
+            case RING:
+                exchange_island = (island_index == 0 ? islands.size() : island_index) - 1;
+                break;
+            case COMPLETE:
+                exchange_island = (island_index + ind_index) % (islands.size() - 1);
+                if(exchange_island >= island_index)
+                    exchange_island++;
+                break;
+        }
+        return exchange_island;
     }
 
     private int[][] determineExchangeIndividuals(){
@@ -108,23 +109,24 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
                         best_fitness[i] = -1;
 
                     for(int no_ind=0;no_ind<island_pop.size();no_ind++){
-                        for(int i=best_fitness.length-1;i>=-1;i--){
-                            if(i == -1 || best_fitness[i] > island_pop.get(no_ind).getFitness()){
-                                if(i == best_fitness.length - 1)
-                                    break;
-                                else{
-                                    if(i == -1)
-                                        i = 0;
-                                    for(int j=best_fitness.length-1;j>i;j--){
-                                        best_fitness[j] = best_fitness[j - 1];
-                                        individual_index[island_index][j] = individual_index[island_index][j - 1];
-                                    }
-                                    best_fitness[i] = island_pop.get(no_ind).getFitness();
-                                    individual_index[island_index][i] = no_ind;
-                                    break;
-                                }
-                            }
-                        }
+                        addElementToNBestArray(best_fitness, individual_index[island_index], island_pop.get(no_ind).getFitness(), no_ind);
+//                        for(int i=best_fitness.length-1;i>=-1;i--){
+//                            if(i == -1 || best_fitness[i] > island_pop.get(no_ind).getFitness()){
+//                                if(i == best_fitness.length - 1)
+//                                    break;
+//                                else{
+//                                    if(i == -1)
+//                                        i = 0;
+//                                    for(int j=best_fitness.length-1;j>i;j--){
+//                                        best_fitness[j] = best_fitness[j - 1];
+//                                        individual_index[island_index][j] = individual_index[island_index][j - 1];
+//                                    }
+//                                    best_fitness[i] = island_pop.get(no_ind).getFitness();
+//                                    individual_index[island_index][i] = no_ind;
+//                                    break;
+//                                }
+//                            }
+//                        }
                     }
                     break;
                 case RANDOM:
@@ -137,11 +139,72 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
                     }
                     break;
                 case MULTI_CULTI:
-                    // TODO: IMPLEMENT THIS
+                    double[][] max_dist = new double[islands.size()][myParams.getNoIndividualExchange()];
+                    int[][] max_dist_ind = new int[islands.size()][myParams.getNoIndividualExchange()];
+
+                    for(int i=0;i<max_dist.length;i++)
+                        for(int j=0;j<max_dist[i].length;j++)
+                            max_dist[i][j] = -1;
+
+                    // Run over all islands and find the N most different individuals
+                    for(int other_island=0;other_island<islands.size();other_island++) {
+                        if (other_island == island_index)
+                            continue;
+                        Population other_island_pop = islands.get(other_island).getPopulation();
+                        double dist;
+                        for(int ind_is=0;ind_is < island_pop.size(); ind_is++){
+                            double min_dist = Double.MAX_VALUE;
+                            Individual i = island_pop.get(ind_is);
+                            for(int ind_other=0;ind_other < other_island_pop.size(); ind_other++){
+                                dist = i.getDistance(other_island_pop.get(ind_other));
+                                if(dist < min_dist)
+                                    min_dist = dist;
+                            }
+                            addElementToNBestArray(max_dist[other_island], max_dist_ind[other_island], min_dist, ind_is);
+                        }
+                    }
+                    //printArray(max_dist, "Max dist");
+
+                    int exchange_island;
+                    int exchange_island_count;
+                    for(int no_ind=0;no_ind<myParams.getNoIndividualExchange();no_ind++){
+                        exchange_island = getExchangeIsland(island_index, no_ind);
+                        exchange_island_count = 0;
+                        while(isInArray(max_dist_ind[exchange_island][exchange_island_count], individual_index[island_index])){
+                            exchange_island_count++;
+                        }
+                        individual_index[island_index][no_ind] = max_dist_ind[exchange_island][exchange_island_count];
+                    }
                     break;
             }
         }
         return individual_index;
+    }
+
+    private void printArray(double[][] a, String name){
+        TheOptimizers.println(name);
+        for(int i=0;i<a.length;i++){
+            TheOptimizers.print("[");
+            for(int j=0;j<a[i].length;j++){
+                if(j > 0)
+                    TheOptimizers.print(", ");
+                TheOptimizers.print(a[i][j]);
+            }
+            TheOptimizers.println("]");
+        }
+    }
+
+    private void printArray(int[][] a, String name){
+        TheOptimizers.println(name);
+        for(int i=0;i<a.length;i++){
+            TheOptimizers.print("[");
+            for(int j=0;j<a[i].length;j++){
+                if(j > 0)
+                    TheOptimizers.print(", ");
+                TheOptimizers.print(a[i][j]);
+            }
+            TheOptimizers.println("]");
+        }
     }
 
     private boolean isInArray(int val, int[] array){
@@ -149,6 +212,26 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
             if(val == i) return true;
         }
         return false;
+    }
+
+    private void addElementToNBestArray(double[] best_val, int[] best_val_ind, double new_val, int new_ind){
+        for(int i=best_val.length-1;i>=-1;i--){
+            if(i == -1 || best_val[i] > new_val){
+                if(i == best_val.length - 1)
+                    break;
+                else{
+                    if(i == -1)
+                        i = 0;
+                    for(int j=best_val.length-1;j>i;j--){
+                        best_val[j] = best_val[j - 1];
+                        best_val_ind[j] = best_val_ind[j - 1];
+                    }
+                    best_val[i] = new_val;
+                    best_val_ind[i] = new_ind;
+                    break;
+                }
+            }
+        }
     }
 
     @Override

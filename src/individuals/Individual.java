@@ -127,4 +127,17 @@ public class Individual
 		return id;
 	}
 
+	public double getDistance(Individual individual){
+		double[] others_genes = individual.getGenotype();
+		return getDistance(others_genes);
+	}
+
+	public double getDistance(double[] others_genes){
+		double dist = 0.0;
+		for(int k=0;k<genes.length;k++)
+			dist += Math.pow(others_genes[k] - genes[k], 2);
+		dist = Math.sqrt(dist);
+		return dist;
+	}
+
 }

@@ -15,8 +15,12 @@ public class IslandParams {
 
     private int epoch_size;
     private int no_individual_exchange;
+
     private ExchangeType exchangeType = ExchangeType.RANDOM;
+    private boolean exchangeMultiCultiMin;
+
     private TopologyType topologyType = TopologyType.RING;
+
     private String name;
 
 
@@ -64,5 +68,13 @@ public class IslandParams {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isExchangeMultiCultiMin() {
+        return exchangeMultiCultiMin;
+    }
+
+    public void setExchangeMultiCultiMin(boolean exchangeMultiCultiMin) {
+        this.exchangeMultiCultiMin = exchangeMultiCultiMin;
     }
 }
