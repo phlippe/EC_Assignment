@@ -109,7 +109,21 @@ public class StandardConfig extends Configuration
 	@Override
 	protected SurvivorSelection createSurvivorSelection()
 	{
-		SurvivorSelection survivorSelection = new SurvivorFitnessSelection();
+		SurvivorSelection survivorSelection = null;
+		switch(params.getSurvivorSelectionType()){
+            case FITNESS_BASED:
+                survivorSelection = new SurvivorFitnessSelection();
+                break;
+            case AGE_BASED:
+                survivorSelection = new SurvivorAgeSelection();
+                break;
+            case ROUND_ROBIN_TOURNAMENT:
+                survivorSelection = new SurvivorRoundRobinTournamentSelection(params.getSurvivorTournamentSize());
+                break;
+            case ELITISM:
+                survivorSelection = new SurvivorElitismSelection();
+                break;
+        }
 		return survivorSelection;
 	}
 
