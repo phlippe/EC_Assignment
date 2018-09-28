@@ -1,11 +1,13 @@
 package algorithm;
 
+import configuration.ConfigParams;
 import configuration.Configuration;
 import individuals.GeneTypes;
 import individuals.GenoRepresentation;
 import individuals.Individual;
 import individuals.Population;
 import initialization.RandomGenoInitializer;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import mutation.GaussianMutation;
 import mutation.Mutation;
 import selection.ParentSelection;
@@ -25,7 +27,7 @@ import java.util.Date;
 /**
  * Created by phlippe on 06.09.18.
  */
-public class EvolutionaryCycle
+public class EvolutionaryCycle implements EvolutionaryAlgorithm
 {
 
 	private Population population;
@@ -65,6 +67,7 @@ public class EvolutionaryCycle
 		population.increaseAge();
 	}
 
+	@Override
 	public void run_single_cycle(){
 		// 1. Parent selection
 		int[][] selected_parents = parentSelection.selectParent(population, myConfig.getNumberOfRecombinations(), myConfig.getParentArity());
@@ -87,14 +90,26 @@ public class EvolutionaryCycle
 		number_cycles++;
 	}
 
+	@Override
+	public Population getPopulation(){
+		return population;
+	}
+
+	public Configuration getMyConfig(){
+		return myConfig;
+	}
+
+	@Override
 	public double[] getBestSolution(){
 		return population.getMaxIndividual().getPhenotype();
 	}
 
+	@Override
 	public double getBestFitness(){
 		return population.getMaxIndividual().getFitness();
 	}
 
+	@Override
 	public void logResults(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		Date date = new Date();
