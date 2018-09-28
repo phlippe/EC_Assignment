@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -34,21 +35,48 @@ public class TestAlgo
 //		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 //      swipeSeeds(eval_ea, eval, 1000);
 
-        ConfigParams configParams = new ConfigParams(50, 5, 2);
+        ConfigParams configParams = new ConfigParams(100, 10, 2);
         configParams.setParentTournamentSize(2);
         configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
         configParams.setSurvivorTournamentSize(2);
         configParams.setMutationMultiSigmaInit(0.01);
         configParams.setMutationMultiSigmaFactor(0.8);
+        configParams.setUseFitnessSharing(false);
+        configParams.setUseFitnessSharingMultiSigma(false);
         StandardConfig config = new StandardConfig(configParams);
-        IslandParams islandParams = new IslandParams(100, 5);
+
+		ConfigParams configParams2 = new ConfigParams(100, 10, 2);
+		configParams2.setParentTournamentSize(2);
+		configParams2.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+		configParams2.setSurvivorTournamentSize(2);
+		configParams2.setMutationMultiSigmaInit(0.01);
+		configParams2.setMutationMultiSigmaFactor(0.8);
+		configParams2.setUseFitnessSharing(true);
+		configParams2.setUseFitnessSharingMultiSigma(false);
+		configParams2.setFitnessSharingSigma(0.001);
+		StandardConfig config2 = new StandardConfig(configParams2);
+
+		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
+		configParams3.setParentTournamentSize(2);
+		configParams3.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+		configParams3.setSurvivorTournamentSize(2);
+		configParams3.setMutationMultiSigmaInit(0.01);
+		configParams3.setMutationMultiSigmaFactor(0.8);
+		configParams3.setUseFitnessSharing(true);
+		configParams3.setUseFitnessSharingMultiSigma(false);
+		configParams3.setFitnessSharingSigma(0.0001);
+		StandardConfig config3 = new StandardConfig(configParams3);
+
+		StandardConfig[] allConfigs = {config, config2, config3, config, config2, config3};
+
+        IslandParams islandParams = new IslandParams(1000, 5);
         islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
-        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(config, 10, islandParams);
-        Tracer tracer = new Tracer(true, "more_islands");
+        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
+        Tracer tracer = new Tracer(false, "fitness_sharing_multi");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 1);
+        swipeSeeds(eval_ea, eval, 500);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){
