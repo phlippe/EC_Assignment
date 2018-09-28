@@ -7,6 +7,7 @@ import configuration.StandardConfig;
 import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
+import selection.SurvivorSelectionType;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -26,9 +27,14 @@ public class TestAlgo
 		double reset_prob = 0;
 		// ExampleConfig config = new ExampleConfig(100 * (int)Math.pow(config_index + 1, 2), 10 * (int)Math.pow(config_index + 1, 2), 2, 0.01, reset_prob, "");
 		ConfigParams configParams = new ConfigParams(400, 40, 2);
-		configParams.setParentTournamentSize(2 * (config_index + 1));
+		configParams.setParentTournamentSize(2);
+		configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+		configParams.setSurvivorTournamentSize(6);
+		//configParams.setMutationMultiSigmaInit(0.005 + (0.001 * (config_index + 1)));
 		configParams.setMutationMultiSigmaInit(0.01);
-		configParams.setName("tour_" + configParams.getParentTournamentSize());
+		configParams.setMutationMultiSigmaFactor(0.8);
+		configParams.setName("mstau_" + Math.round(configParams.getMutationMultiSigmaFactor() * 1000.0) / 1000.0);
+		//configParams.setName("tau_" + (config_index + 1) * 2);
 		StandardConfig config = new StandardConfig(configParams);
 		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 		//executeExperiment(null, eval);
