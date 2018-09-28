@@ -34,16 +34,19 @@ public class TestAlgo
 //		ContestEvaluation eval = createEval(EvalType.KATSUURA);
 //      swipeSeeds(eval_ea, eval, 1000);
 
-        ConfigParams configParams = new ConfigParams(100, 10, 2);
-        configParams.setParentTournamentSize(4);
+        ConfigParams configParams = new ConfigParams(50, 5, 2);
+        configParams.setParentTournamentSize(2);
         configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-        configParams.setSurvivorTournamentSize(6);
+        configParams.setSurvivorTournamentSize(2);
         configParams.setMutationMultiSigmaInit(0.01);
         configParams.setMutationMultiSigmaFactor(0.8);
         StandardConfig config = new StandardConfig(configParams);
-        IslandParams islandParams = new IslandParams(500, 2);
+        IslandParams islandParams = new IslandParams(100, 5);
         islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
-        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(config, 5, islandParams);
+        islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
+        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(config, 10, islandParams);
+        Tracer tracer = new Tracer(true, "more_islands");
+        eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
         swipeSeeds(eval_ea, eval, 1);
 	}

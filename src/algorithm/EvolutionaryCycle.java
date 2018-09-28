@@ -38,6 +38,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 	private ArrayList<Mutation> mutations;
 	private Configuration myConfig;
 	private int number_cycles;
+	private Tracer tracer;
 
 	public EvolutionaryCycle(Configuration myConfig){
 		this.myConfig = myConfig;
@@ -48,6 +49,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		recombination = myConfig.getRecombination();
 		mutations = myConfig.getMutationOperators();
 		number_cycles = 0;
+		tracer = new Tracer(false, "");
 	}
 
 	@Override
@@ -65,6 +67,12 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		}
 		population.reevaluateMaxFitness();
 		population.increaseAge();
+		tracer.initialize();
+		tracer.addTraceFile(TraceTags.MAX_FITNESS);
+		tracer.addTraceFile(TraceTags.MEAN_FITNESS);
+		tracer.addTraceFile(TraceTags.MIN_FITNESS);
+		tracer.addTraceFile(TraceTags.MEAN_DISTANCE);
+		tracer.addTraceFile(TraceTags.MEAN_POSITION);
 	}
 
 	@Override
@@ -88,6 +96,15 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		survivorSelection.selectSurvivors(population, children);
 		population.increaseAge();
 		number_cycles++;
+		tracePopulation();
+	}
+
+	private void tracePopulation(){
+		tracer.addTraceContent(TraceTags.MAX_FITNESS, population.getMaxIndividual().getFitness());
+		tracer.addTraceContent(TraceTags.MIN_FITNESS, population.getMinIndividual().getFitness());
+		tracer.addTraceContent(TraceTags.MEAN_FITNESS, population.getMeanFitness());
+		tracer.addTraceContent(TraceTags.MEAN_POSITION, population.getMeanPosition());
+		tracer.addTraceContent(TraceTags.MEAN_DISTANCE, population.getMeanDistance(population.getMeanPosition()));
 	}
 
 	@Override
@@ -150,4 +167,14 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
         s += ("\n"+myConfig.toString()) + "\n";
         return s;
     }
+
+    @Override
+	public void addTracer(Tracer tracer){
+		this.tracer = tracer;
+	}
+
+	@Override
+	public void writeTraceFiles(){
+		tracer.writeOut();
+	}
 }

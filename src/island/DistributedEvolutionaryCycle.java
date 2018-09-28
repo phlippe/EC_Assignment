@@ -1,8 +1,6 @@
 package island;
 
-import algorithm.EvolutionaryAlgorithm;
-import algorithm.EvolutionaryCycle;
-import algorithm.TheOptimizers;
+import algorithm.*;
 import configuration.Configuration;
 import individuals.Individual;
 import individuals.MultiPopulation;
@@ -21,6 +19,7 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
     private IslandParams myParams;
     private ArrayList<EvolutionaryAlgorithm> islands;
     private int no_cycle;
+    private Tracer tracer;
 
 
     public DistributedEvolutionaryCycle(ArrayList cycles, IslandParams myParams){
@@ -35,6 +34,7 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
 
         this.myParams = myParams;
         this.no_cycle = 0;
+        tracer = new Tracer(false, "");
     }
 
     public DistributedEvolutionaryCycle(Configuration config, int no_island, IslandParams myParams){
@@ -43,10 +43,22 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
             islands.add(new EvolutionaryCycle(config));
         this.myParams = myParams;
         this.no_cycle = 0;
+        tracer = new Tracer(false, "");
+    }
+
+    public void addTracer(Tracer tr){
+        tracer = tr;
+        for(int i=0;i<islands.size();i++){
+            Tracer island_tracer = new Tracer(tr.isActive(), "island_" + i);
+            island_tracer.setParentTracer(tracer);
+            islands.get(i).addTracer(island_tracer);
+        }
     }
 
     @Override
     public void initialize(){
+        tracer.initialize();
+        tracer.addTraceFile(TraceTags.ISLAND_EXCHANGE);
         for(EvolutionaryAlgorithm ea: islands)
             ea.initialize();
     }
@@ -61,7 +73,6 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
     }
 
     private void exchangeIndividuals(){
-        TheOptimizers.println("Exchange individuals");
         int[][] individual_index = determineExchangeIndividuals();
 
         Individual[][] individuals = new Individual[individual_index.length][individual_index[0].length];
@@ -74,9 +85,9 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
             for(int ind_index=0;ind_index<individual_index[island_index].length;ind_index++){
                 exchange_island = getExchangeIsland(island_index, ind_index);
                 islands.get(exchange_island).getPopulation().set(individual_index[exchange_island][ind_index], individuals[island_index][ind_index]);
+                tracer.addTraceContent(TraceTags.ISLAND_EXCHANGE, island_index + ", " + exchange_island + ", " + individuals[island_index][ind_index].getFitness());
             }
         }
-        TheOptimizers.println("Finished");
     }
 
     private int getExchangeIsland(int island_index, int ind_index){
@@ -110,23 +121,6 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
 
                     for(int no_ind=0;no_ind<island_pop.size();no_ind++){
                         addElementToNBestArray(best_fitness, individual_index[island_index], island_pop.get(no_ind).getFitness(), no_ind);
-//                        for(int i=best_fitness.length-1;i>=-1;i--){
-//                            if(i == -1 || best_fitness[i] > island_pop.get(no_ind).getFitness()){
-//                                if(i == best_fitness.length - 1)
-//                                    break;
-//                                else{
-//                                    if(i == -1)
-//                                        i = 0;
-//                                    for(int j=best_fitness.length-1;j>i;j--){
-//                                        best_fitness[j] = best_fitness[j - 1];
-//                                        individual_index[island_index][j] = individual_index[island_index][j - 1];
-//                                    }
-//                                    best_fitness[i] = island_pop.get(no_ind).getFitness();
-//                                    individual_index[island_index][i] = no_ind;
-//                                    break;
-//                                }
-//                            }
-//                        }
                     }
                     break;
                 case RANDOM:
@@ -305,5 +299,12 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
         for(EvolutionaryAlgorithm ea: islands)
             s += ea.getLogString() + "\n";
         return s;
+    }
+
+    @Override
+    public void writeTraceFiles(){
+        tracer.writeOut();
+        for(EvolutionaryAlgorithm ea: islands)
+            ea.writeTraceFiles();
     }
 }

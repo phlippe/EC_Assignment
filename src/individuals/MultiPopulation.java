@@ -79,5 +79,14 @@ public class MultiPopulation extends Population {
         }
     }
 
+    @Override
+    public Individual getMinIndividual(){
+        Individual minIndividual = populations.get(0).getMinIndividual();
+        for(Population p: populations)
+            if(p.getMinIndividual().getFitness() < minIndividual.getFitness())
+                minIndividual = p.getMinIndividual();
+        return minIndividual;
+    }
+
 
 }

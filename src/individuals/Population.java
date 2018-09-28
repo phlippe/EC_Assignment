@@ -83,7 +83,15 @@ public class Population
 		}
 	}
 
-	private double[] getMeanPosition(){
+	public Individual getMinIndividual(){
+		Individual minInd = myIndividuals[0];
+		for(Individual i: myIndividuals)
+			if(i.getFitness() < minInd.getFitness())
+				minInd = i;
+		return minInd;
+	}
+
+	public double[] getMeanPosition(){
 		double[] mean_pos = new double[myIndividuals[0].getGenotype().length];
 		double[] genes;
 		for(Individual i: myIndividuals){
@@ -94,7 +102,7 @@ public class Population
 		return mean_pos;
 	}
 
-	private double getMeanDistance(double[] mean_pos){
+	public double getMeanDistance(double[] mean_pos){
 		double mean_dist = 0.0;
 		double loc_dist;
 		double[] genes;
@@ -102,6 +110,13 @@ public class Population
 			mean_dist += i.getDistance(mean_pos);
 		}
 		return mean_dist;
+	}
+
+	public double getMeanFitness(){
+		double mean_fitness = 0.0;
+		for(Individual i: myIndividuals)
+			mean_fitness += i.getFitness();
+		return mean_fitness / myIndividuals.length;
 	}
 
 }

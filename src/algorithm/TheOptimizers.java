@@ -16,7 +16,7 @@ public class TheOptimizers
     private int evaluations_limit_;
     private double best_score;
     private EvolutionaryAlgorithm eval_cycle;
-    private static final boolean SILENT_RUN = false;
+    private static final boolean SILENT_RUN = true;
 
     public TheOptimizers() {
         rnd_ = new Random();
@@ -26,6 +26,7 @@ public class TheOptimizers
         // Set seed of algorithms random process
         rnd_.setSeed(seed);
         rnd_seed = seed;
+        TheOptimizers.println("Seed: " + seed);
     }
 
     public void setEvaluation(ContestEvaluation evaluation) {
@@ -91,6 +92,7 @@ public class TheOptimizers
         if (!SILENT_RUN)
             eval_cycle.logResults();
         best_score = eval_cycle.getBestFitness();
+        eval_cycle.writeTraceFiles();
     }
 
     public double getBestScore() {
