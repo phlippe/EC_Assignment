@@ -62,6 +62,8 @@ public class Population
 
 	public void reevaluateMaxFitness(){
 		TheOptimizers.println("Reevaluating max fitness (before: "+maxFitness+")");
+		maxFitness = -1;
+		maxIndividual = null;
 		for(int i=0;i<myIndividuals.length;i++){
 			if(myIndividuals[i].getFitness() > maxFitness){
 				maxFitness = myIndividuals[i].getFitness();
