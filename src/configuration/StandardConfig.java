@@ -158,4 +158,11 @@ public class StandardConfig extends Configuration
 	{
 		return params.getParentArity();
 	}
+
+    @Override
+    public ConfigParams getParameters() {
+        return params;
+    }
+
+
 }

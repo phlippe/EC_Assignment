@@ -140,4 +140,6 @@ public abstract class Configuration
 		return name;
 	}
 
+	public abstract ConfigParams getParameters();
+
 }

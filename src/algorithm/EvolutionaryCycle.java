@@ -67,16 +67,20 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		}
 		population.reevaluateMaxFitness();
 		population.increaseAge();
+		population.setConfigParams(myConfig.getParameters());
 		tracer.initialize();
 		tracer.addTraceFile(TraceTags.MAX_FITNESS);
 		tracer.addTraceFile(TraceTags.MEAN_FITNESS);
 		tracer.addTraceFile(TraceTags.MIN_FITNESS);
 		tracer.addTraceFile(TraceTags.MEAN_DISTANCE);
 		tracer.addTraceFile(TraceTags.MEAN_POSITION);
+		tracer.addTraceFile(TraceTags.MEAN_MULTI_SIGMA);
+		tracer.addTraceFile(TraceTags.MEAN_FITNESS_FACTOR);
 	}
 
 	@Override
 	public void run_single_cycle(){
+		population.prepareCycle();
 		// 1. Parent selection
 		int[][] selected_parents = parentSelection.selectParent(population, myConfig.getNumberOfRecombinations(), myConfig.getParentArity());
 		// 2. recombination.Recombination / crossover
@@ -92,11 +96,13 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 			double fitness = (double) TheOptimizers.evaluation_.evaluate(child.getPhenotype());
 			child.setFitness(fitness);
 		}
+		population.interactWithNewChildren(children);
 		// 5. Survivor selection
 		survivorSelection.selectSurvivors(population, children);
 		population.increaseAge();
 		number_cycles++;
 		tracePopulation();
+		population.endCycle();
 	}
 
 	private void tracePopulation(){
@@ -105,6 +111,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceContent(TraceTags.MEAN_FITNESS, population.getMeanFitness());
 		tracer.addTraceContent(TraceTags.MEAN_POSITION, population.getMeanPosition());
 		tracer.addTraceContent(TraceTags.MEAN_DISTANCE, population.getMeanDistance(population.getMeanPosition()));
+		tracer.addTraceContent(TraceTags.MEAN_MULTI_SIGMA, population.getOverallMeanMultiSigma());
+		tracer.addTraceContent(TraceTags.MEAN_FITNESS_FACTOR, population.getMeanFitnessFactor());
 	}
 
 	@Override

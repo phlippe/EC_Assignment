@@ -19,6 +19,7 @@ public class Individual
 	private double myFitness;
 	private double age;
 	private long id;
+	private double fitnessFactor = 1.0;
 
 	public Individual(){
 		myFitness = -1;
@@ -38,6 +39,14 @@ public class Individual
 		for(int i=0;i<myRepr.number_additional_params.length;i++){
 			add_params.add(new double[myRepr.number_additional_params[i]]);
 		}
+	}
+
+	public void setFitnessFactor(double factor){
+		fitnessFactor = factor;
+	}
+
+	public double getFitnessFactor(){
+		return fitnessFactor;
 	}
 
 	public void initialize(GenoInitializer gene_init){
@@ -92,7 +101,7 @@ public class Individual
 	}
 
 	public double getFitness(){
-		return myFitness;
+		return myFitness * fitnessFactor;
 	}
 
 	public GenoRepresentation getRepresentation(){
@@ -136,6 +145,15 @@ public class Individual
 		double dist = 0.0;
 		for(int k=0;k<genes.length;k++)
 			dist += Math.pow(others_genes[k] - genes[k], 2);
+		dist = Math.sqrt(dist);
+		return dist;
+	}
+
+	public double getDistance(Individual individual, double[] weights){
+		double[] others_genes = individual.getGenotype();
+		double dist = 0.0;
+		for(int k=0;k<genes.length;k++)
+			dist += Math.pow((others_genes[k] - genes[k]) / weights[k], 2);
 		dist = Math.sqrt(dist);
 		return dist;
 	}

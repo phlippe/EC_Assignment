@@ -8,5 +8,7 @@ public class TraceTags {
     public static final String MIN_FITNESS = "fitness_min";
     public static final String MEAN_POSITION = "position_mean";
     public static final String MEAN_DISTANCE = "distance_mean";
+    public static final String MEAN_MULTI_SIGMA = "multi_sigma_mean";
+    public static final String MEAN_FITNESS_FACTOR = "factor_fitness_mean";
 
 }

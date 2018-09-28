@@ -12,6 +12,10 @@ public class ConfigParams {
     private int numberRecombinations;
     private int parentArity;
 
+    private boolean useFitnessSharing = false;
+    private double fitnessSharingSigma = 0.1;
+    private boolean useFitnessSharingMultiSigma = false;
+
     private ParentSelectionType parentSelectionType = ParentSelectionType.TOURNAMENT_SELECTION;
     private ParentSelectionStochasticType parentSelectionStochasticType = ParentSelectionStochasticType.UNIVERSAL;
     private int parentTournamentSize = 25;
@@ -255,5 +259,29 @@ public class ConfigParams {
 
     public void setRecombinationWACAlpha(double recombinationWACAlpha) {
         this.recombinationWACAlpha = recombinationWACAlpha;
+    }
+
+    public boolean useFitnessSharing() {
+        return useFitnessSharing;
+    }
+
+    public void setUseFitnessSharing(boolean useFitnessSharing) {
+        this.useFitnessSharing = useFitnessSharing;
+    }
+
+    public boolean useFitnessSharingMultiSigma() {
+        return useFitnessSharingMultiSigma;
+    }
+
+    public void setUseFitnessSharingMultiSigma(boolean useFitnessSharingMultiSigma) {
+        this.useFitnessSharingMultiSigma = useFitnessSharingMultiSigma;
+    }
+
+    public double getFitnessSharingSigma() {
+        return fitnessSharingSigma;
+    }
+
+    public void setFitnessSharingSigma(double fitnessSharingSigma) {
+        this.fitnessSharingSigma = fitnessSharingSigma;
     }
 }

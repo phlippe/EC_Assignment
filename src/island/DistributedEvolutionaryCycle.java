@@ -2,6 +2,7 @@ package island;
 
 import algorithm.*;
 import configuration.Configuration;
+import configuration.StandardConfig;
 import individuals.Individual;
 import individuals.MultiPopulation;
 import individuals.Population;
@@ -11,6 +12,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
@@ -21,6 +23,13 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
     private int no_cycle;
     private Tracer tracer;
 
+    public DistributedEvolutionaryCycle(StandardConfig[] configs, IslandParams myParams){
+        this(new ArrayList<>(Arrays.asList(configs)), myParams);
+    }
+
+    public DistributedEvolutionaryCycle(EvolutionaryAlgorithm[] eas, IslandParams myParams){
+        this(new ArrayList<>(Arrays.asList(eas)), myParams);
+    }
 
     public DistributedEvolutionaryCycle(ArrayList cycles, IslandParams myParams){
         if(cycles.get(0) instanceof EvolutionaryAlgorithm)

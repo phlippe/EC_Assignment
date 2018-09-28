@@ -136,4 +136,11 @@ public class ExampleConfig extends Configuration
 	{
 		return parent_arity;
 	}
+
+	@Override
+	public ConfigParams getParameters() {
+		return new ConfigParams(getPopulationSize(), getNumberOfRecombinations(), getParentArity());
+	}
+
+
 }
