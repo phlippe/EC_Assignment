@@ -5,10 +5,7 @@ import individuals.GeneTypes;
 import individuals.GenoRepresentation;
 import initialization.GenoInitializer;
 import initialization.RandomGenoInitializer;
-import mutation.EvovleMutation;
-import mutation.GaussianMutation;
-import mutation.MultiSigma;
-import mutation.Mutation;
+import mutation.*;
 import recombination.*;
 import selection.*;
 
@@ -25,6 +22,7 @@ public class ExampleConfig extends Configuration
 	private int parent_arity = 2;
 	private double init_variance = 0.5;
 	private double sigvariance;
+	private double reset_prob = 0.0;
 
 
 	public ExampleConfig(){
@@ -49,10 +47,15 @@ public class ExampleConfig extends Configuration
 	}
 
 	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double init_variance, String name) {
+		this(population_size, number_recombinations, parent_arity, init_variance, 0.0, name);
+	}
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double init_variance, double reset_prob, String name){
 		this.population_size = population_size;
 		this.number_recombinations = number_recombinations;
 		this.parent_arity = parent_arity;
 		this.init_variance = init_variance;
+		this.reset_prob = reset_prob;
 		setName(name);
 		init();
 	}
@@ -72,7 +75,9 @@ public class ExampleConfig extends Configuration
 		GeneTypes[] multi = {GeneTypes.MULTI_SIGMA};
 		GeneTypes[] genes = {GeneTypes.OPT_GENES};
 		ArrayList<Mutation> mutations = new ArrayList<>();
-		mutations.add(new EvovleMutation(multi, population_size, 1));
+		EvovleMutation evMut = new EvovleMutation(multi, population_size, 1);
+		ResetMutation resMut = new ResetMutation(multi, 0.01);//new ResetMutation(multi, 1.0, 100.0, true);
+		mutations.add(new CombinedMutation(evMut, resMut, 1 - reset_prob));
 		mutations.add(new MultiSigma(genes));
 
 		return mutations;
@@ -89,7 +94,7 @@ public class ExampleConfig extends Configuration
 	protected ParentSelection createParentSelection()
 	{
 		ParentSelectionStochastic parentSelectionStochastic = new ParentSelectionStochasticUniversal();
-		ParentSelection parentSelection = new ParentSigmaScalingSelection(parentSelectionStochastic, 2);
+		ParentSelection parentSelection = new TournamentSelection(parentSelectionStochastic, 25);//new ParentSigmaScalingSelection(parentSelectionStochastic, 2);
 		return parentSelection;
 	}
 
