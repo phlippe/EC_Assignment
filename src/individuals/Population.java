@@ -81,4 +81,29 @@ public class Population
 		}
 	}
 
+	private double[] getMeanPosition(){
+		double[] mean_pos = new double[myIndividuals[0].getGenotype().length];
+		double[] genes;
+		for(Individual i: myIndividuals){
+			genes = i.getGenotype();
+			for(int k=0;k<genes.length;k++)
+				mean_pos[k] += genes[k] / myIndividuals.length;
+		}
+		return mean_pos;
+	}
+
+	private double getMeanDistance(double[] mean_pos){
+		double mean_dist = 0.0;
+		double loc_dist;
+		double[] genes;
+		for(Individual i: myIndividuals){
+			genes = i.getGenotype();
+			loc_dist = 0.0;
+			for(int k=0;k<genes.length;k++)
+				loc_dist += Math.pow(mean_pos[k] - genes[k], 2);
+			mean_dist += Math.sqrt(loc_dist) / myIndividuals.length;
+		}
+		return mean_dist;
+	}
+
 }
