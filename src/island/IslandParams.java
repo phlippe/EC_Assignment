@@ -17,11 +17,13 @@ public class IslandParams {
     private int no_individual_exchange;
     private ExchangeType exchangeType = ExchangeType.RANDOM;
     private TopologyType topologyType = TopologyType.RING;
+    private String name;
 
 
     public IslandParams(int epoch_size, int no_individual_exchange){
         setEpochSize(epoch_size);
         setNoIndividualExchange(no_individual_exchange);
+        setName("");
     }
 
     public int getEpochSize() {
@@ -54,5 +56,13 @@ public class IslandParams {
 
     public void setTopologyType(TopologyType topologyType) {
         this.topologyType = topologyType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

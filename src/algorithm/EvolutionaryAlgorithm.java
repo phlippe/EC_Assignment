@@ -6,6 +6,8 @@ public interface EvolutionaryAlgorithm {
 
     void run_single_cycle();
 
+    int getEvalsPerCycle();
+
     double[] getBestSolution();
 
     double getBestFitness();
@@ -13,4 +15,10 @@ public interface EvolutionaryAlgorithm {
     Population getPopulation();
 
     void logResults();
+
+    String getLogString();
+
+    String getName();
+
+    void initialize();
 }

@@ -43,7 +43,6 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		this.myConfig = myConfig;
 		population = new Population(myConfig.getPopulationSize());
 		genoRepresentation = myConfig.getRepresentation();
-		initialize();
 		survivorSelection = myConfig.getSurvivorSelection();
 		parentSelection = myConfig.getParentSelection();
 		recombination = myConfig.getRecombination();
@@ -51,7 +50,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		number_cycles = 0;
 	}
 
-	private void initialize(){
+	@Override
+	public void initialize(){
 		population.initialize(genoRepresentation, myConfig.getGenoInitializer(), myConfig.getAddParamsInitializer());
 		for(int i=0;i<population.size();i++){
 			if(TheOptimizers.evaluation_ != null)
@@ -100,6 +100,16 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 	}
 
 	@Override
+	public int getEvalsPerCycle(){
+	    return myConfig.getNumberOfRecombinations() * myConfig.getParentArity();
+    }
+
+    @Override
+    public String getName(){
+	    return myConfig.getName();
+    }
+
+	@Override
 	public double[] getBestSolution(){
 		return population.getMaxIndividual().getPhenotype();
 	}
@@ -116,21 +126,28 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		new File("logs/").mkdirs();
 		String filename = "logs/log_" + (myConfig.getName().length() == 0 ? "" : myConfig.getName() + "_") + dateFormat.format(date) + ".txt";
 		try (PrintWriter out = new PrintWriter(filename)) {
-			out.println("Date: " + (new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss")).format(date));
-			out.println("Evaluation class: " + TheOptimizers.evaluation_.getClass().getName());
-			out.println("Evolution cycles: " + number_cycles);
-			out.println("Seed (randomness): " + TheOptimizers.rnd_seed);
-			out.println("Best fitness: " + getBestFitness());
-			out.println("Best solution: ");
-			double[] best_solution = getBestSolution();
-			for(int i=0;i<best_solution.length;i++){
-				out.println("\t("+i+") "+best_solution[i]);
-			}
-			out.println("\n"+myConfig.toString());
+            out.println("Date: " + (new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss")).format(date));
+			out.println(getLogString());
 		}
 		catch (Exception e){
 			TheOptimizers.println("Could not write results to file. Error message:");
 			TheOptimizers.println(e.getMessage());
 		}
 	}
+
+	@Override
+    public String getLogString(){
+	    String s = "";
+        s += ("Evaluation class: " + TheOptimizers.evaluation_.getClass().getName()) + "\n";
+        s += ("Evolution cycles: " + number_cycles) + "\n";
+        s += ("Seed (randomness): " + TheOptimizers.rnd_seed) + "\n";
+        s += ("Best fitness: " + getBestFitness()) + "\n";
+        s += ("Best solution: ") + "\n";
+        double[] best_solution = getBestSolution();
+        for(int i=0;i<best_solution.length;i++){
+            s += ("\t("+i+") "+best_solution[i]) + "\n";
+        }
+        s += ("\n"+myConfig.toString()) + "\n";
+        return s;
+    }
 }

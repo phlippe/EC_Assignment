@@ -116,7 +116,7 @@ public abstract class Configuration
 		return s;
 	}
 
-	private String createHeading(String heading, char c){
+	public static String createHeading(String heading, char c){
 		int space_front = (int)Math.ceil(heading.length() / 2.0) + 1;
 		int space_back = (int)Math.floor(heading.length() / 2.0) + 1;
 		return "\n" + repeatChar(c,LINE_SIZE/2-space_front) +
@@ -124,7 +124,7 @@ public abstract class Configuration
 				repeatChar(c,LINE_SIZE/2-space_back) + "\n\n";
 	}
 
-	private String repeatChar(char c, int amount){
+	public static String repeatChar(char c, int amount){
 		char[] c_array = new char[amount];
 		for(int i=0;i<amount;i++){
 			c_array[i] = c;

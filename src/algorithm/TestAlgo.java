@@ -4,6 +4,8 @@ import configuration.ConfigParams;
 import configuration.Configuration;
 import configuration.ExampleConfig;
 import configuration.StandardConfig;
+import island.DistributedEvolutionaryCycle;
+import island.IslandParams;
 import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
@@ -25,45 +27,52 @@ public class TestAlgo
 	public static void main(String args[]){
 		int config_index = Integer.parseInt(args[0]);
 		double reset_prob = 0;
-		// ExampleConfig config = new ExampleConfig(100 * (int)Math.pow(config_index + 1, 2), 10 * (int)Math.pow(config_index + 1, 2), 2, 0.01, reset_prob, "");
-		ConfigParams configParams = new ConfigParams(400, 40, 2);
-		configParams.setParentTournamentSize(2);
-		configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams.setSurvivorTournamentSize(6);
-		//configParams.setMutationMultiSigmaInit(0.005 + (0.001 * (config_index + 1)));
-		configParams.setMutationMultiSigmaInit(0.01);
-		configParams.setMutationMultiSigmaFactor(0.8);
-		configParams.setName("mstau_" + Math.round(configParams.getMutationMultiSigmaFactor() * 1000.0) / 1000.0);
-		//configParams.setName("tau_" + (config_index + 1) * 2);
-		StandardConfig config = new StandardConfig(configParams);
-		ContestEvaluation eval = createEval(EvalType.KATSUURA);
-		//executeExperiment(null, eval);
-        swipeSeeds(config, eval, 1000);
 
-//		SwipeFunction func = (double swipe_val) -> new ExampleConfig((int)Math.round(swipe_val),
-//						((int)Math.round(swipe_val)) / 10,
-//						2);
-//		SwipeFunction func = (double swipe_val) -> (new ExampleConfig(100,
-//				10,
-//				2, swipe_val, "swipe_" + swipe_val));
-//		swipeExperiment(eval, func, 0.1, 0.1, 10, false);
+//		ConfigParams configParams = getBestKatsuuraConfig();
+//		StandardConfig config = new StandardConfig(configParams);
+//		EvolutionaryCycle eval_ea = new EvolutionaryCycle(config);
+//		ContestEvaluation eval = createEval(EvalType.KATSUURA);
+//      swipeSeeds(eval_ea, eval, 1000);
+
+        ConfigParams configParams = new ConfigParams(100, 10, 2);
+        configParams.setParentTournamentSize(4);
+        configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+        configParams.setSurvivorTournamentSize(6);
+        configParams.setMutationMultiSigmaInit(0.01);
+        configParams.setMutationMultiSigmaFactor(0.8);
+        StandardConfig config = new StandardConfig(configParams);
+        IslandParams islandParams = new IslandParams(500, 2);
+        islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
+        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(config, 5, islandParams);
+        ContestEvaluation eval = createEval(EvalType.KATSUURA);
+        swipeSeeds(eval_ea, eval, 1);
 	}
 
-	private static double executeExperiment(Configuration config, ContestEvaluation eval){
-		return executeExperiment(config, eval, 1);
+	private static ConfigParams getBestKatsuuraConfig(){
+        ConfigParams configParams = new ConfigParams(400, 40, 2);
+        configParams.setParentTournamentSize(2);
+        configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+        configParams.setSurvivorTournamentSize(6);
+        configParams.setMutationMultiSigmaInit(0.01);
+        configParams.setMutationMultiSigmaFactor(0.8);
+        return configParams;
+    }
+
+	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval){
+		return executeExperiment(eval_ea, eval, 1);
 	}
 
-	private static double executeExperiment(Configuration config, ContestEvaluation eval, long seed){
+	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, long seed){
 		TheOptimizers a = new TheOptimizers();
 		a.setSeed(seed);
 		a.setEvaluation(eval);
-		if(config != null)
-			a.setConfig(config);
+		if(eval_ea != null)
+			a.setEvolutionaryAlgorithm(eval_ea);
 		a.run();
 		return a.getBestScore();
 	}
 
-	private static void swipeSeeds(Configuration config, ContestEvaluation eval, int number_of_runs){
+	private static void swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs){
 	    double best_score = 0.0;
 	    double mean_score = 0.0;
 	    double worst_score = Double.MAX_VALUE;
@@ -71,9 +80,10 @@ public class TestAlgo
 	    long startTime = System.currentTimeMillis();
 	    long lastPrintTime = -1;
 	    long currentTime;
-	    String summary = config.toString() + "\n\n";
+
+        String summary = "";
 	    for(int i=0;i<number_of_runs;i++){
-	        loc_score = executeExperiment(config, eval, i);
+	        loc_score = executeExperiment(eval_ea, eval, i);
 	        if(loc_score > best_score)
 	            best_score = loc_score;
 	        if(loc_score < worst_score)
@@ -100,11 +110,12 @@ public class TestAlgo
         }
         mean_score /= number_of_runs;
 	    summary += "==============================\nBest score: " + best_score + "\nWorst score: " + worst_score + "\nMean score: " + mean_score;
+        summary += "\n\n" + eval_ea.getLogString() + "\n\n";
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         Date date = new Date();
         new File("logs/").mkdirs();
-        String filename = "logs/swipe_" + (config.getName().length() == 0 ? "" : config.getName() + "_") + dateFormat.format(date) + ".txt";
+        String filename = "logs/swipe_" + (eval_ea.getName().length() == 0 ? "" : eval_ea.getName() + "_") + dateFormat.format(date) + ".txt";
         try (PrintWriter out = new PrintWriter(filename)) {
             out.println(summary);
         }
@@ -112,20 +123,6 @@ public class TestAlgo
             System.out.println(e.getMessage());
         }
     }
-
-	private static void swipeExperiment(ContestEvaluation eval, SwipeFunction func, double start_val, double step_size,
-										int number_steps, boolean exponential){
-		double val;
-		for(int i=0;i<number_steps;i++){
-			if(!exponential)
-				val = start_val + step_size * i;
-			else
-				val = start_val * Math.pow(step_size, i);
-			Configuration new_config = func.swipeConfig(val);
-			Thread t = new Thread(()->executeExperiment(new_config, eval));
-			t.start();
-		}
-	}
 
 	private static ContestEvaluation createEval(EvalType eval_func){
 		ContestEvaluation eval;

@@ -14,9 +14,9 @@ public class TheOptimizers
     public static long rnd_seed;
     static ContestEvaluation evaluation_;
     private int evaluations_limit_;
-    private Configuration config;
     private double best_score;
-    private static final boolean SILENT_RUN = true;
+    private EvolutionaryAlgorithm eval_cycle;
+    private static final boolean SILENT_RUN = false;
 
     public TheOptimizers() {
         rnd_ = new Random();
@@ -59,21 +59,25 @@ public class TheOptimizers
         }
     }
 
-    public void setConfig(Configuration config) {
-        this.config = config;
+    private void setConfig(Configuration config){
+        setEvolutionaryAlgorithm(new EvolutionaryCycle(config));
+    }
+
+    public void setEvolutionaryAlgorithm(EvolutionaryAlgorithm ea){
+        eval_cycle = ea;
     }
 
     public void run() {
         // Run your algorithm here
 
         int evals = 0;
-        EvolutionaryCycle eval_cycle = new EvolutionaryCycle(config);
+        eval_cycle.initialize();
         // init population
         // calculate fitness
         TheOptimizers.println("Run");
         while (evals < evaluations_limit_) {
             eval_cycle.run_single_cycle();
-            evals += config.getNumberOfRecombinations() * config.getParentArity();
+            evals += eval_cycle.getEvalsPerCycle();
             if (evals % 10000 == 0) {
                 TheOptimizers.println("Evaluated " + evals + " steps");
             }
