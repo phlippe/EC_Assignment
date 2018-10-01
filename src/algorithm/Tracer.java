@@ -45,7 +45,6 @@ public class Tracer {
             if(parentTracer != null)
                 file_basepath += parentTracer.getName() + "/";
             file_basepath += name + "_" + date_string + "/";
-            new File(file_basepath).mkdirs();
         }
     }
 
@@ -102,6 +101,7 @@ public class Tracer {
 
     public void writeOut(){
         if(isActive){
+            new File(file_basepath).mkdirs();
             for(TraceObject to: traceFiles){
                 String filename = file_basepath + to.tag + ".txt";
                 try (PrintWriter out = new PrintWriter(filename)) {

@@ -67,7 +67,7 @@ public class MultiPopulation extends Population {
     public Individual getMaxIndividual(){
         Individual maxIndividual = populations.get(0).getMaxIndividual();
         for(Population p: populations)
-            if(p.getMaxIndividual().getFitness() > maxIndividual.getFitness())
+            if(p.getMaxIndividual().getPureFitness() > maxIndividual.getPureFitness())
                 maxIndividual = p.getMaxIndividual();
         return maxIndividual;
     }
@@ -83,7 +83,7 @@ public class MultiPopulation extends Population {
     public Individual getMinIndividual(){
         Individual minIndividual = populations.get(0).getMinIndividual();
         for(Population p: populations)
-            if(p.getMinIndividual().getFitness() < minIndividual.getFitness())
+            if(p.getMinIndividual().getPureFitness() < minIndividual.getPureFitness())
                 minIndividual = p.getMinIndividual();
         return minIndividual;
     }

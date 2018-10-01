@@ -76,6 +76,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceFile(TraceTags.MEAN_POSITION);
 		tracer.addTraceFile(TraceTags.MEAN_MULTI_SIGMA);
 		tracer.addTraceFile(TraceTags.MEAN_FITNESS_FACTOR);
+		tracer.addTraceFile(TraceTags.FITNESS_SHARING_BETA);
+		tracer.addTraceFile(TraceTags.FITNESS_SHARING_DISTANCE_SUM);
 	}
 
 	@Override
@@ -101,18 +103,20 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		survivorSelection.selectSurvivors(population, children);
 		population.increaseAge();
 		number_cycles++;
-		tracePopulation();
 		population.endCycle();
+		tracePopulation();
 	}
 
 	private void tracePopulation(){
-		tracer.addTraceContent(TraceTags.MAX_FITNESS, population.getMaxIndividual().getFitness());
-		tracer.addTraceContent(TraceTags.MIN_FITNESS, population.getMinIndividual().getFitness());
+		tracer.addTraceContent(TraceTags.MAX_FITNESS, population.getMaxIndividual().getPureFitness());
+		tracer.addTraceContent(TraceTags.MIN_FITNESS, population.getMinIndividual().getPureFitness());
 		tracer.addTraceContent(TraceTags.MEAN_FITNESS, population.getMeanFitness());
 		tracer.addTraceContent(TraceTags.MEAN_POSITION, population.getMeanPosition());
 		tracer.addTraceContent(TraceTags.MEAN_DISTANCE, population.getMeanDistance(population.getMeanPosition()));
 		tracer.addTraceContent(TraceTags.MEAN_MULTI_SIGMA, population.getOverallMeanMultiSigma());
 		tracer.addTraceContent(TraceTags.MEAN_FITNESS_FACTOR, population.getMeanFitnessFactor());
+		tracer.addTraceContent(TraceTags.FITNESS_SHARING_BETA, population.getFitnessSharingBeta());
+		tracer.addTraceContent(TraceTags.FITNESS_SHARING_DISTANCE_SUM, population.getFitnessSharingMeanDistanceSum());
 	}
 
 	@Override

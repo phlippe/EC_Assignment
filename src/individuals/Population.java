@@ -15,20 +15,32 @@ public class Population
 	private Individual[] myIndividuals;
 	private double maxFitness;
 	private Individual maxIndividual;
+	private int population_age;
+
 	private boolean useFitnessSharing = false;
 	private double sigma_sharing = -1;
+	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
+	private double fitnessSharingBetaStep, fitnessSharingBetaOffsetSteps;
+	private boolean fitnessSharingBetaExponential;
 	private boolean useFitnessSharingMultiSigma = false;
 
 	public Population(int size){
 		myIndividuals = new Individual[size];
 		maxFitness = -1;
 		maxIndividual = null;
+		population_age = 0;
 	}
 
 	public void setConfigParams(ConfigParams params){
 		useFitnessSharing = params.useFitnessSharing();
 		sigma_sharing = params.getFitnessSharingSigma();
 		useFitnessSharingMultiSigma = params.useFitnessSharingMultiSigma();
+		fitnessSharingAlpha = params.getFitnessSharingAlpha();
+		fitnessSharingBeta = params.getFitnessSharingBeta();
+		fitnessSharingBetaStep = params.getFitnessSharingBetaStep();
+		fitnessSharingBetaExponential = params.isFitnessSharingBetaExponential();
+		fitnessSharingBetaOffsetSteps = params.getFitnessSharingBetaOffsetSteps();
+		fitnessSharingBetaInit = params.getFitnessSharingBeta();
 	}
 
 	public Individual get(int index){
@@ -45,10 +57,10 @@ public class Population
 
 	public void set(int index, Individual individual){
 		myIndividuals[index] = individual;
-		if(individual.getFitness() > maxFitness){
-			maxFitness = individual.getFitness();
+		if(individual.getPureFitness() > maxFitness){
+			maxFitness = individual.getPureFitness();
 			maxIndividual = individual;
-			TheOptimizers.println("Found new max fitness: "+individual.getFitness());
+			TheOptimizers.println("Found new max fitness: "+individual.getPureFitness());
 		}
 	}
 
@@ -68,6 +80,8 @@ public class Population
 			else
 				myIndividuals[i].initialize(gene_init);
 		}
+		population_age = 0;
+		fitnessSharingBeta = fitnessSharingBetaInit;
 	}
 
 	public void reevaluateMaxFitness(){
@@ -75,8 +89,8 @@ public class Population
 		maxFitness = -1;
 		maxIndividual = null;
 		for(int i=0;i<myIndividuals.length;i++){
-			if(myIndividuals[i].getFitness() > maxFitness){
-				maxFitness = myIndividuals[i].getFitness();
+			if(myIndividuals[i].getPureFitness() > maxFitness){
+				maxFitness = myIndividuals[i].getPureFitness();
 				maxIndividual = myIndividuals[i];
 			}
 		}
@@ -91,12 +105,28 @@ public class Population
 		for(Individual i: myIndividuals){
 			i.increaseAge();
 		}
+		population_age++;
+		updateParams();
+	}
+
+	private void updateParams(){
+		updateBeta();
+	}
+
+	private void updateBeta(){
+		if(population_age > fitnessSharingBetaOffsetSteps) {
+			if (fitnessSharingBetaExponential) {
+				fitnessSharingBeta *= fitnessSharingBetaStep;
+			} else {
+				fitnessSharingBeta += fitnessSharingBetaStep;
+			}
+		}
 	}
 
 	public Individual getMinIndividual(){
 		Individual minInd = myIndividuals[0];
 		for(Individual i: myIndividuals)
-			if(i.getFitness() < minInd.getFitness())
+			if(i.getPureFitness() < minInd.getPureFitness())
 				minInd = i;
 		return minInd;
 	}
@@ -114,12 +144,18 @@ public class Population
 
 	public double getMeanDistance(double[] mean_pos){
 		double mean_dist = 0.0;
-		double loc_dist;
-		double[] genes;
 		for(Individual i: myIndividuals){
 			mean_dist += i.getDistance(mean_pos);
 		}
 		return mean_dist;
+	}
+
+	public double getFitnessSharingMeanDistanceSum(){
+		double mean_sum = 0.0;
+		for(Individual i: myIndividuals)
+			mean_sum += i.getDistanceSum();
+		mean_sum /= myIndividuals.length;
+		return mean_sum;
 	}
 
 	public double getOverallMeanMultiSigma(){
@@ -159,13 +195,16 @@ public class Population
 	public double getMeanFitness(){
 		double mean_fitness = 0.0;
 		for(Individual i: myIndividuals)
-			mean_fitness += i.getFitness();
+			mean_fitness += i.getPureFitness();
 		return mean_fitness / myIndividuals.length;
 	}
 
 	private void setFitnessFactorSharing(){
+		double distance_sum, fitness_factor;
 		for(Individual individual: myIndividuals){
-			individual.setFitnessFactor(1.0 / getDistanceSumForIndividual(individual));
+			distance_sum = getDistanceSumForIndividual(individual);
+			fitness_factor = calcFitnessSharing(individual, distance_sum);
+			individual.setFitnessFactor(fitness_factor, distance_sum);
 		}
 	}
 
@@ -175,11 +214,11 @@ public class Population
 		for(Individual neighbor: myIndividuals){
 			if(useFitnessSharingMultiSigma){
 				dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
-				sum += dist < 1 ? (1 - dist) : 0;
+				sum += calcFitnessDistance(dist, 1);
 			}
 			else {
 				dist = individual.getDistance(neighbor);
-				sum += dist < sigma_sharing ? (1 - dist / sigma_sharing) : 0;
+				sum += calcFitnessDistance(dist, sigma_sharing);
 			}
 		}
 		return sum;
@@ -191,19 +230,38 @@ public class Population
 		for(Individual neighbor: sub_population){
 			if(useFitnessSharingMultiSigma){
 				dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
-				sum += dist < 1 ? (1 - dist) : 0;
+				sum += calcFitnessDistance(dist, 1);
 			}
 			else {
 				dist = individual.getDistance(neighbor);
-				sum += dist < sigma_sharing ? (1 - dist / sigma_sharing) : 0;
+				sum += calcFitnessDistance(dist, sigma_sharing);
 			}
 		}
 		return sum;
 	}
 
-	public void resetFitnessFactors(){
+	private double calcFitnessDistance(double distance, double sigma){
+		if(distance > sigma){
+			return 0.0;
+		}
+		else{
+			return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+		}
+	}
+
+	private double calcFitnessSharing(Individual individual, double sum_dist){
+		if(fitnessSharingBeta == 1 || individual.getPureFitness() < 0){
+			return 1.0 / sum_dist;
+		}
+		else{
+			return (1.0 / sum_dist) * Math.pow(Math.max(0, individual.getPureFitness()), fitnessSharingBeta - 1);
+		}
+	}
+
+	private void resetFitnessFactors(){
 		for(Individual i: myIndividuals)
 			i.setFitnessFactor(1.0);
+		maxIndividual.setFitnessFactor(1.0);
 	}
 
 	public void prepareCycle(){
@@ -218,13 +276,22 @@ public class Population
 
 	public void interactWithNewChildren(ArrayList<Individual> children) {
 		if(useFitnessSharing) {
+			double sum_distances, fitness_factor;
 			for (Individual child : children) {
-				child.setFitnessFactor(1.0 / (getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child)));
+				sum_distances = getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child);
+				fitness_factor = calcFitnessSharing(child, sum_distances);
+				child.setFitnessFactor(fitness_factor, sum_distances);
 			}
 			for (Individual parent: myIndividuals) {
-				parent.setFitnessFactor(1.0 / (1.0 / parent.getFitnessFactor() + getDistanceSumForIndividual(children, parent)));
+				sum_distances = parent.getDistanceSum() + getDistanceSumForIndividual(children, parent);
+				fitness_factor = calcFitnessSharing(parent, sum_distances);
+				parent.setFitnessFactor(fitness_factor, sum_distances);
 			}
 		}
+	}
+
+	public double getFitnessSharingBeta(){
+		return fitnessSharingBeta;
 	}
 
 }

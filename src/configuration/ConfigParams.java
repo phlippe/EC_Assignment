@@ -15,6 +15,11 @@ public class ConfigParams {
     private boolean useFitnessSharing = false;
     private double fitnessSharingSigma = 0.1;
     private boolean useFitnessSharingMultiSigma = false;
+    private double fitnessSharingAlpha = 1;
+    private double fitnessSharingBeta = 1;
+    private double fitnessSharingBetaStep = 1;
+    private double fitnessSharingBetaOffsetSteps = 0;
+    private boolean fitnessSharingBetaExponential = true;
 
     private ParentSelectionType parentSelectionType = ParentSelectionType.TOURNAMENT_SELECTION;
     private ParentSelectionStochasticType parentSelectionStochasticType = ParentSelectionStochasticType.UNIVERSAL;
@@ -283,5 +288,45 @@ public class ConfigParams {
 
     public void setFitnessSharingSigma(double fitnessSharingSigma) {
         this.fitnessSharingSigma = fitnessSharingSigma;
+    }
+
+    public double getFitnessSharingAlpha() {
+        return fitnessSharingAlpha;
+    }
+
+    public void setFitnessSharingAlpha(double fitnessSharingAlpha) {
+        this.fitnessSharingAlpha = fitnessSharingAlpha;
+    }
+
+    public double getFitnessSharingBeta() {
+        return fitnessSharingBeta;
+    }
+
+    public void setFitnessSharingBeta(double fitnessSharingBeta) {
+        this.fitnessSharingBeta = fitnessSharingBeta;
+    }
+
+    public double getFitnessSharingBetaStep() {
+        return fitnessSharingBetaStep;
+    }
+
+    public void setFitnessSharingBetaStep(double fitnessSharingBetaStep) {
+        this.fitnessSharingBetaStep = fitnessSharingBetaStep;
+    }
+
+    public boolean isFitnessSharingBetaExponential() {
+        return fitnessSharingBetaExponential;
+    }
+
+    public void setFitnessSharingBetaExponential(boolean fitnessSharingBetaExponential) {
+        this.fitnessSharingBetaExponential = fitnessSharingBetaExponential;
+    }
+
+    public double getFitnessSharingBetaOffsetSteps() {
+        return fitnessSharingBetaOffsetSteps;
+    }
+
+    public void setFitnessSharingBetaOffsetSteps(double fitnessSharingBetaOffsetSteps) {
+        this.fitnessSharingBetaOffsetSteps = fitnessSharingBetaOffsetSteps;
     }
 }

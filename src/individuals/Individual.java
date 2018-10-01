@@ -20,6 +20,7 @@ public class Individual
 	private double age;
 	private long id;
 	private double fitnessFactor = 1.0;
+	private double distanceSum = 0.0;
 
 	public Individual(){
 		myFitness = -1;
@@ -45,8 +46,17 @@ public class Individual
 		fitnessFactor = factor;
 	}
 
+	public void setFitnessFactor(double factor, double sum_distances){
+		setFitnessFactor(factor);
+		distanceSum = sum_distances;
+	}
+
 	public double getFitnessFactor(){
 		return fitnessFactor;
+	}
+
+	public double getDistanceSum(){
+		return distanceSum;
 	}
 
 	public void initialize(GenoInitializer gene_init){
@@ -102,6 +112,10 @@ public class Individual
 
 	public double getFitness(){
 		return myFitness * fitnessFactor;
+	}
+
+	public double getPureFitness(){
+		return myFitness;
 	}
 
 	public GenoRepresentation getRepresentation(){
