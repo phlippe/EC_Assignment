@@ -364,9 +364,9 @@ public class Population implements ConfigurableObject
 			if(!useFitnessSharingMultiSigma)
 				s += "Shared sigma: " + sigma_sharing + "\n";
 			s += "Alpha: " + fitnessSharingAlpha + "\n";
-			s += "Beta initial: " + fitnessSharingBeta + "\n";
+			s += "Beta initial: " + fitnessSharingBetaInit + "\n";
 			s += "Beta offset steps: " + fitnessSharingBetaOffsetSteps + "\n";
-			s += "Beta step size: " + fitnessSharingBetaOffsetSteps + " " + (fitnessSharingBetaExponential ? "(exponential)":"(linear)") + "\n";
+			s += "Beta step size: " + fitnessSharingBetaStep + " " + (fitnessSharingBetaExponential ? "(exponential)":"(linear)") + "\n";
 			s += "Beta max steps: " + fitnessSharingBetaMaxSteps + "\n";
 		}
 		return s;
