@@ -156,7 +156,7 @@ public class Population implements ConfigurableObject
 		for(Individual i: myIndividuals){
 			mean_dist += i.getDistance(mean_pos);
 		}
-		return mean_dist;
+		return mean_dist / myIndividuals.length;
 	}
 
 	public double getFitnessSharingMeanDistanceSum(){
