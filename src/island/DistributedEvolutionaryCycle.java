@@ -316,4 +316,9 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
         for(EvolutionaryAlgorithm ea: islands)
             ea.writeTraceFiles();
     }
+
+    @Override
+    public String getExtraDescription() {
+        return "";
+    }
 }

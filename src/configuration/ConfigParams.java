@@ -19,6 +19,7 @@ public class ConfigParams {
     private double fitnessSharingBeta = 1;
     private double fitnessSharingBetaStep = 1;
     private double fitnessSharingBetaOffsetSteps = 0;
+    private double fitnessSharingBetaMaxSteps = -1;
     private boolean fitnessSharingBetaExponential = true;
 
     private ParentSelectionType parentSelectionType = ParentSelectionType.TOURNAMENT_SELECTION;
@@ -48,7 +49,7 @@ public class ConfigParams {
     private double recombinationSBCEta = 1.0;
     private double recombinationWACAlpha = 0.5;
 
-    private String name;
+    private String name = "";
 
 
     public ConfigParams(int population_size, int number_recombinations, int parent_arity){
@@ -328,5 +329,13 @@ public class ConfigParams {
 
     public void setFitnessSharingBetaOffsetSteps(double fitnessSharingBetaOffsetSteps) {
         this.fitnessSharingBetaOffsetSteps = fitnessSharingBetaOffsetSteps;
+    }
+
+    public double getFitnessSharingBetaMaxSteps() {
+        return fitnessSharingBetaMaxSteps;
+    }
+
+    public void setFitnessSharingBetaMaxSteps(double fitnessSharingBetaMaxSteps) {
+        this.fitnessSharingBetaMaxSteps = fitnessSharingBetaMaxSteps;
     }
 }

@@ -25,4 +25,6 @@ public interface EvolutionaryAlgorithm {
     void addTracer(Tracer tracer);
 
     void writeTraceFiles();
+
+    String getExtraDescription();
 }

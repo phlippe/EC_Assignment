@@ -45,7 +45,7 @@ public class TestAlgo
         configParams.setUseFitnessSharingMultiSigma(false);
         StandardConfig config = new StandardConfig(configParams);
 
-		ConfigParams configParams2 = new ConfigParams(100, 10, 2);
+		ConfigParams configParams2 = new ConfigParams(200, 20, 2);
 		configParams2.setParentTournamentSize(2);
 		configParams2.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
 		configParams2.setSurvivorTournamentSize(2);
@@ -53,7 +53,18 @@ public class TestAlgo
 		configParams2.setMutationMultiSigmaFactor(0.8);
 		configParams2.setUseFitnessSharing(true);
 		configParams2.setUseFitnessSharingMultiSigma(false);
-		configParams2.setFitnessSharingSigma(0.001);
+		configParams2.setFitnessSharingSigma(0.01);
+		configParams2.setFitnessSharingBeta(1);
+		configParams2.setFitnessSharingAlpha(2);
+		double remaining_iterations = 25000;
+		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
+		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
+		// configParams2.setFitnessSharingBetaExponential(true);
+		double offstep_prop = 0.2;
+		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
+		configParams2.setFitnessSharingBetaMaxSteps((1 - 2 * offstep_prop) * remaining_iterations);
+		configParams2.setFitnessSharingBetaStep(9 / ((1 - 3 * offstep_prop) * remaining_iterations));
+		configParams2.setFitnessSharingBetaExponential(false);
 		StandardConfig config2 = new StandardConfig(configParams2);
 
 		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
@@ -72,11 +83,12 @@ public class TestAlgo
         IslandParams islandParams = new IslandParams(1000, 5);
         islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
-        DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
-        Tracer tracer = new Tracer(false, "fitness_sharing_multi");
+        // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
+        EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
+		Tracer tracer = new Tracer(true, "fitness_sharing_population_200");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 500);
+        swipeSeeds(eval_ea, eval, 100);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){

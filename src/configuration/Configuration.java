@@ -1,6 +1,7 @@
 package configuration;
 
 
+import algorithm.EvolutionaryAlgorithm;
 import individuals.GenoRepresentation;
 import initialization.GenoInitializer;
 import mutation.Mutation;
@@ -26,6 +27,7 @@ public abstract class Configuration
 	private GenoInitializer genoInitializer;
 	private ArrayList<GenoInitializer> addParamsInitializer;
 	private String name;
+	private EvolutionaryAlgorithm eval_ea;
 
 	public Configuration(){
 		name = "";
@@ -112,6 +114,10 @@ public abstract class Configuration
 		}
 		s += createHeading("Survivor Selection", '-');
 		s += mySurvivorSelection.getDescription();
+		if(eval_ea != null) {
+			s += createHeading("Extras", '-');
+			s += eval_ea.getExtraDescription();
+		}
 		s += "\n" + repeatChar('=', LINE_SIZE);
 		return s;
 	}
@@ -141,5 +147,9 @@ public abstract class Configuration
 	}
 
 	public abstract ConfigParams getParameters();
+
+	public void setEvolutionaryAlgorithm(EvolutionaryAlgorithm eval_ea){
+		this.eval_ea = eval_ea;
+	}
 
 }

@@ -2,6 +2,7 @@ package individuals;
 
 import algorithm.TheOptimizers;
 import configuration.ConfigParams;
+import configuration.ConfigurableObject;
 import initialization.GenoInitializer;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by phlippe on 06.09.18.
  */
-public class Population
+public class Population implements ConfigurableObject
 {
 
 	private Individual[] myIndividuals;
@@ -20,15 +21,19 @@ public class Population
 	private boolean useFitnessSharing = false;
 	private double sigma_sharing = -1;
 	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
-	private double fitnessSharingBetaStep, fitnessSharingBetaOffsetSteps;
+	private double fitnessSharingBetaStep, fitnessSharingBetaOffsetSteps, fitnessSharingBetaMaxSteps;
 	private boolean fitnessSharingBetaExponential;
 	private boolean useFitnessSharingMultiSigma = false;
+	private double[][] distance_matrix;
+	private long[] individual_ids;
 
 	public Population(int size){
 		myIndividuals = new Individual[size];
 		maxFitness = -1;
 		maxIndividual = null;
 		population_age = 0;
+		distance_matrix = new double[size][size];
+		individual_ids = new long[size];
 	}
 
 	public void setConfigParams(ConfigParams params){
@@ -40,6 +45,7 @@ public class Population
 		fitnessSharingBetaStep = params.getFitnessSharingBetaStep();
 		fitnessSharingBetaExponential = params.isFitnessSharingBetaExponential();
 		fitnessSharingBetaOffsetSteps = params.getFitnessSharingBetaOffsetSteps();
+		fitnessSharingBetaMaxSteps = params.getFitnessSharingBetaMaxSteps();
 		fitnessSharingBetaInit = params.getFitnessSharingBeta();
 	}
 
@@ -82,6 +88,8 @@ public class Population
 		}
 		population_age = 0;
 		fitnessSharingBeta = fitnessSharingBetaInit;
+		for(int i=0;i<individual_ids.length;i++)
+			individual_ids[i] = -1;
 	}
 
 	public void reevaluateMaxFitness(){
@@ -114,7 +122,8 @@ public class Population
 	}
 
 	private void updateBeta(){
-		if(population_age > fitnessSharingBetaOffsetSteps) {
+		if(population_age > fitnessSharingBetaOffsetSteps &&
+				(fitnessSharingBetaMaxSteps == -1 || population_age <= fitnessSharingBetaMaxSteps)) {
 			if (fitnessSharingBetaExponential) {
 				fitnessSharingBeta *= fitnessSharingBetaStep;
 			} else {
@@ -201,24 +210,39 @@ public class Population
 
 	private void setFitnessFactorSharing(){
 		double distance_sum, fitness_factor;
-		for(Individual individual: myIndividuals){
-			distance_sum = getDistanceSumForIndividual(individual);
+		Individual individual;
+		for(int i=0;i<myIndividuals.length;i++){
+			individual = myIndividuals[i];
+			distance_sum = getDistanceSumForIndividual(individual, i);
 			fitness_factor = calcFitnessSharing(individual, distance_sum);
 			individual.setFitnessFactor(fitness_factor, distance_sum);
 		}
 	}
 
-	private double getDistanceSumForIndividual(Individual individual){
+	private double getDistanceSumForIndividual(Individual individual, int index){
 		double sum, dist;
 		sum = 0.0;
-		for(Individual neighbor: myIndividuals){
-			if(useFitnessSharingMultiSigma){
-				dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
-				sum += calcFitnessDistance(dist, 1);
+		Individual neighbor;
+		boolean isOldID = index >= 0 && (individual_ids[index] == individual.getID());
+		for(int neighbor_index=0;neighbor_index<myIndividuals.length;neighbor_index++){
+			neighbor = myIndividuals[neighbor_index];
+			if(isOldID && individual_ids[neighbor_index] == neighbor.getID()){
+				dist = distance_matrix[index][neighbor_index];
 			}
 			else {
-				dist = individual.getDistance(neighbor);
+				if (useFitnessSharingMultiSigma) {
+					dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
+				} else {
+					dist = individual.getDistance(neighbor);
+				}
+			}
+			if (useFitnessSharingMultiSigma) {
+				sum += calcFitnessDistance(dist, 1);
+			} else {
 				sum += calcFitnessDistance(dist, sigma_sharing);
+			}
+			if(index >= 0){
+				distance_matrix[index][neighbor_index] = dist;
 			}
 		}
 		return sum;
@@ -267,6 +291,8 @@ public class Population
 	public void prepareCycle(){
 		if(useFitnessSharing){
 			setFitnessFactorSharing();
+			for(int i=0;i<individual_ids.length;i++)
+				individual_ids[i] = myIndividuals[i].getID();
 		}
 	}
 
@@ -278,7 +304,7 @@ public class Population
 		if(useFitnessSharing) {
 			double sum_distances, fitness_factor;
 			for (Individual child : children) {
-				sum_distances = getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child);
+				sum_distances = getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child, -1);
 				fitness_factor = calcFitnessSharing(child, sum_distances);
 				child.setFitnessFactor(fitness_factor, sum_distances);
 			}
@@ -294,4 +320,55 @@ public class Population
 		return fitnessSharingBeta;
 	}
 
+	public static void main(String args[]){
+		GenoRepresentation repr = new BoundRepresentation(2, new int[0], new GeneTypes[0],-5, 5);
+		Individual i = new Individual(repr);
+		i.setFitness(2.0);
+		double[] genes_i = {0.0, 1.0};
+		i.setGenes(genes_i);
+		Individual i2 = new Individual(repr);
+		i2.setFitness(2.0);
+		double[] genes_i2 = {0.0, 1.0};
+		i2.setGenes(genes_i2);
+		Population population = new Population(2);
+		population.set(0, i);
+		population.set(1, i2);
+
+		ConfigParams params = new ConfigParams(1, 1, 1);
+		params.setUseFitnessSharing(true);
+		params.setFitnessSharingBeta(1);
+		params.setFitnessSharingAlpha(1);
+		params.setFitnessSharingSigma(4.0);
+		population.setConfigParams(params);
+
+		population.prepareCycle();
+		System.out.println("Individual 1: " + i.getFitnessFactor() + ", " + i.getFitness() + ", " + i.getDistanceSum());
+		System.out.println("Individual 2: " + i2.getFitnessFactor() + ", " + i2.getFitness() + ", " + i2.getDistanceSum());
+	}
+
+	public double getMeanAge() {
+		double mean_age = 0.0;
+		for(Individual i: myIndividuals)
+			mean_age += i.getAge();
+		mean_age /= myIndividuals.length;
+		return mean_age;
+	}
+
+	@Override
+	public String getDescription() {
+		String s = "";
+		s += "Population size: " + myIndividuals.length + "\n";
+		s += "Use Fitness Sharing: " + useFitnessSharing + "\n";
+		if(useFitnessSharing){
+			s += "Use self-adapted multi sigmas for fitness sharing: " + useFitnessSharingMultiSigma + "\n";
+			if(!useFitnessSharingMultiSigma)
+				s += "Shared sigma: " + sigma_sharing + "\n";
+			s += "Alpha: " + fitnessSharingAlpha + "\n";
+			s += "Beta initial: " + fitnessSharingBeta + "\n";
+			s += "Beta offset steps: " + fitnessSharingBetaOffsetSteps + "\n";
+			s += "Beta step size: " + fitnessSharingBetaOffsetSteps + " " + (fitnessSharingBetaExponential ? "(exponential)":"(linear)") + "\n";
+			s += "Beta max steps: " + fitnessSharingBetaMaxSteps + "\n";
+		}
+		return s;
+	}
 }

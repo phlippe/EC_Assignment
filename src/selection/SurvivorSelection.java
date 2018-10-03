@@ -18,7 +18,8 @@ public abstract class SurvivorSelection implements ConfigurableObject
 		pairList = new ArrayList<>();
 	}
 
-	public void selectSurvivors(Population population, ArrayList<Individual> individuals){
+	public ArrayList<Individual> selectSurvivors(Population population, ArrayList<Individual> individuals){
+		ArrayList<Individual> deadIndividuals = new ArrayList<>();
 		if(pairList.size() < population.size() + individuals.size()){
 			for(int i=pairList.size();i<population.size() + individuals.size();i++){
 				pairList.add(new FitnessIndexPair(-1, -1));
@@ -49,11 +50,14 @@ public abstract class SurvivorSelection implements ConfigurableObject
 		}
 		childToDelete.sort(Integer::compareTo);
 		for(int i=0;i<childToDelete.size();i++){
+			deadIndividuals.add(individuals.get(childToDelete.get(i) - i));
 			individuals.remove(childToDelete.get(i) - i);
 		}
 		for(int i=0;i<freePositions.size();i++){
+			deadIndividuals.add(population.get(freePositions.get(i)));
 			population.set(freePositions.get(i), individuals.get(i));
 		}
+		return deadIndividuals;
 	}
 
 	abstract void prepareSelection(Population population, ArrayList<Individual> children);

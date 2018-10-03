@@ -12,5 +12,11 @@ public class TraceTags {
     public static final String MEAN_FITNESS_FACTOR = "factor_fitness_mean";
     public static final String FITNESS_SHARING_BETA = "factor_fitness_beta";
     public static final String FITNESS_SHARING_DISTANCE_SUM = "factor_fitness_distance_sum";
+    public static final String MEAN_AGE_POPULATION = "age_mean_population";
+    public static final String MEAN_AGE_DEAD = "dead_age_mean";
+    public static final String MIN_AGE_DEAD = "dead_age_min";
+    public static final String MEAN_FITNESS_DEAD = "dead_fitness_mean";
+    public static final String MEAN_FITNESS_FACTOR_DEAD = "dead_fitness_factor_mean";
+    public static final String MEAN_DEAD_OFFSPRINGS = "dead_offsprings_mean";
 
 }
