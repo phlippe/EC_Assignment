@@ -126,7 +126,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		double min_age = Double.MAX_VALUE;
 		for(Individual i: removed_individuals){
 			mean_age += i.getAge();
-			killed_offsprings += (i.getAge() == 1 ? 1 : 0);
+			killed_offsprings += (i.getAge() == 0 ? 1 : 0);
 			mean_fitness += i.getPureFitness();
 			mean_fitness_factor += i.getFitnessFactor();
 			if(i.getAge() < min_age)
