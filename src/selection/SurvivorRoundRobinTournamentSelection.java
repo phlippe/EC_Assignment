@@ -107,7 +107,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 	{
 		for(TournamentContestant c: contestants){
 			if(individual.getID() == c.id){
-				return c.wins;
+				return c.wins + 1e-5 * TheOptimizers.rnd_.nextDouble();
 			}
 		}
 		return -1;
