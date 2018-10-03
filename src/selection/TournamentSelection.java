@@ -23,41 +23,36 @@ public class TournamentSelection extends ParentSelection {
 
     @Override
     public int[][] selectParent(Population population, int number_parent_pairs, int number_parents){
-        ArrayList<Individual> FinalBatch=new ArrayList<>(number_parents);
         int[][] parent_indices=new int[number_parent_pairs][number_parents];
+        int[] tournament_indices = new int[k];
+        boolean found_new_number;
+        int selectedNum;
+        double best_fitness;
+        int best_index;
+        double current_fitness;
 
-        for (int j=0;j<number_parents*number_parent_pairs;j++) {
-            ArrayList<Individual> TournamentBatch = new ArrayList<>(k);
-            for (int i = 0; i < k; i++) {
-                int selectedNum = TheOptimizers.rnd_.nextInt(population.size());
-                TournamentBatch.add(i, population.get(selectedNum));
-            }
-            TournamentBatch.sort(new Comparator<Individual>() {
-                @Override
-                public int compare(Individual o1, Individual o2) {
-                    return -Double.compare((o1).getFitness(), (o2).getFitness());
-                }
-            });
-            FinalBatch.add(TournamentBatch.get(0));
-        }
-        int counter=0;
-        for (int i=0;i<number_parent_pairs;i++){
-            for(int j=0;j<number_parents;j++) {
-                parent_indices[i][j] = (int)FinalBatch.get(counter).getID();
-                counter++;
-            }
-        }
-        /*Searching for their place in the population*/
-        for (int a=0;a<number_parent_pairs;a++){
-            for (int b=0;b<number_parents;b++){
-                for (int i=0;i<population.size();i++){
-                    if (population.get(i).getID()==parent_indices[a][b]){
-                        parent_indices[a][b]=i;
+        for(int pair_index=0;pair_index<number_parent_pairs;pair_index++) {
+            for (int parent_index=0;parent_index<number_parents;parent_index++) {
+                best_fitness = -1;
+                best_index = -1;
+                for (int i = 0; i < k; i++) {
+                    do {
+                        found_new_number = true;
+                        selectedNum = TheOptimizers.rnd_.nextInt(population.size());
+                        for (int l = 0; l < i; l++) {
+                            found_new_number = found_new_number && (tournament_indices[l] != selectedNum);
+                        }
+                    } while (!found_new_number);
+                    tournament_indices[i] = selectedNum;
+                    current_fitness = population.get(selectedNum).getFitness();
+                    if(current_fitness > best_fitness){
+                        best_fitness = current_fitness;
+                        best_index = selectedNum;
                     }
                 }
+                parent_indices[pair_index][parent_index] = best_index;
             }
         }
-
         return parent_indices;
     }
 
