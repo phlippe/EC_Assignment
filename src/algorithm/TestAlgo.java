@@ -55,7 +55,7 @@ public class TestAlgo
 		configParams2.setUseFitnessSharing(true);
 		configParams2.setUseFitnessSharingMultiSigma(false);
 		configParams2.setFitnessSharingSigma(0.03);
-		configParams2.setFitnessSharingBeta(1);
+		configParams2.setFitnessSharingBeta(0.5);
 		configParams2.setFitnessSharingAlpha(1000);
 		double remaining_iterations = 12500;
 		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
@@ -87,10 +87,10 @@ public class TestAlgo
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
         // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
         EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(true, "fitness_sharing_relative");
+		Tracer tracer = new Tracer(false, "fitness_sharing_relative");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 1);
+        swipeSeeds(eval_ea, eval, 100);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){

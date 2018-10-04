@@ -9,5 +9,6 @@ public enum FitnessSharingType
 	STANDARD,
 	RELATIVE,
 	LOG_SCALE,
-	SQRT;
+	SQRT,
+	PUSH_TO_LINE;
 }

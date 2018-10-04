@@ -27,6 +27,7 @@ public class Population implements ConfigurableObject
 	private boolean useFitnessSharingMultiSigma = false;
 	private double[][] distance_matrix;
 	private long[] individual_ids;
+	private double mean_distance;
 
 	public Population(int size){
 		myIndividuals = new Individual[size];
@@ -297,7 +298,14 @@ public class Population implements ConfigurableObject
 				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / individual.getPureFitness() *
 						Math.exp(Math.log10(individual.getPureFitness()+1e-5));
 			case SQRT:
-				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / Math.pow(individual.getPureFitness(), 0.75);
+				return Math.pow((1.0 - sum_dist / myIndividuals.length), 1.0/fitnessSharingBeta) / Math.pow(individual.getPureFitness(), 0.75);
+			case PUSH_TO_LINE:
+				double my_dist = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
+				double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
+				if(mean_distance < desired_mean_distance){
+					return (1 + desired_mean_distance / mean_distance * my_dist);
+				}
+				return 1;
 		}
 		return 1.0;
 	}
@@ -310,6 +318,7 @@ public class Population implements ConfigurableObject
 
 	public void prepareCycle(){
 		if(useFitnessSharing){
+			mean_distance = getMeanDistance(getMeanPosition());
 			setFitnessFactorSharing();
 			for(int i=0;i<individual_ids.length;i++)
 				individual_ids[i] = myIndividuals[i].getID();
