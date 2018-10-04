@@ -4,6 +4,7 @@ import configuration.ConfigParams;
 import configuration.Configuration;
 import configuration.ExampleConfig;
 import configuration.StandardConfig;
+import individuals.FitnessSharingType;
 import island.DistributedEvolutionaryCycle;
 import island.IslandParams;
 import org.vu.contest.ContestEvaluation;
@@ -55,16 +56,17 @@ public class TestAlgo
 		configParams2.setUseFitnessSharingMultiSigma(false);
 		configParams2.setFitnessSharingSigma(0.03);
 		configParams2.setFitnessSharingBeta(1);
-		configParams2.setFitnessSharingAlpha(1);
+		configParams2.setFitnessSharingAlpha(1000);
 		double remaining_iterations = 12500;
 		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
 		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
 		// configParams2.setFitnessSharingBetaExponential(true);
-		double offstep_prop = 0.2;
+		double offstep_prop = 0.4;
 		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-		configParams2.setFitnessSharingBetaMaxSteps((1 - offstep_prop) * remaining_iterations);
-		configParams2.setFitnessSharingBetaStep(9.5 / ((1 - 2 * offstep_prop) * remaining_iterations));
+		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
+		configParams2.setFitnessSharingBetaStep(9.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
 		configParams2.setFitnessSharingBetaExponential(false);
+		configParams2.setFitnessSharingType(FitnessSharingType.SQRT);
 		StandardConfig config2 = new StandardConfig(configParams2);
 
 		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
@@ -85,10 +87,10 @@ public class TestAlgo
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
         // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
         EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(false, "fitness_sharing_rnd_survivor");
+		Tracer tracer = new Tracer(true, "fitness_sharing_relative");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 100);
+        swipeSeeds(eval_ea, eval, 1);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){

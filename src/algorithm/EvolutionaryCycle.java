@@ -86,6 +86,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceFile(TraceTags.MEAN_FITNESS_DEAD);
 		tracer.addTraceFile(TraceTags.MEAN_FITNESS_FACTOR_DEAD);
 		tracer.addTraceFile(TraceTags.MIN_AGE_DEAD);
+		tracer.addTraceFile(TraceTags.MEAN_SHARED_FITNESS);
 	}
 
 	@Override
@@ -111,11 +112,19 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		ArrayList<Individual> removed_individuals = survivorSelection.selectSurvivors(population, children);
 		population.increaseAge();
 		number_cycles++;
+		if(tracer.isActive()){
+			traceCyclePopulation();
+		}
 		population.endCycle();
 		if(tracer.isActive()) {
 			tracePopulation();
 			traceRemovedIndividuals(removed_individuals);
 		}
+	}
+
+	private void traceCyclePopulation(){
+		tracer.addTraceContent(TraceTags.MEAN_FITNESS_FACTOR, population.getMeanFitnessFactor());
+		tracer.addTraceContent(TraceTags.MEAN_SHARED_FITNESS, population.getMeanSharedFitness());
 	}
 
 	private void traceRemovedIndividuals(ArrayList<Individual> removed_individuals) {
@@ -150,7 +159,6 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceContent(TraceTags.MEAN_POSITION, population.getMeanPosition());
 		tracer.addTraceContent(TraceTags.MEAN_DISTANCE, population.getMeanDistance(population.getMeanPosition()));
 		tracer.addTraceContent(TraceTags.MEAN_MULTI_SIGMA, population.getOverallMeanMultiSigma());
-		tracer.addTraceContent(TraceTags.MEAN_FITNESS_FACTOR, population.getMeanFitnessFactor());
 		tracer.addTraceContent(TraceTags.FITNESS_SHARING_BETA, population.getFitnessSharingBeta());
 		tracer.addTraceContent(TraceTags.FITNESS_SHARING_DISTANCE_SUM, population.getFitnessSharingMeanDistanceSum());
 		tracer.addTraceContent(TraceTags.MEAN_AGE_POPULATION, population.getMeanAge());

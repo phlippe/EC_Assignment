@@ -18,6 +18,7 @@ public class Population implements ConfigurableObject
 	private Individual maxIndividual;
 	private int population_age;
 
+	private FitnessSharingType fitnessSharingType = FitnessSharingType.STANDARD;
 	private boolean useFitnessSharing = false;
 	private double sigma_sharing = -1;
 	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
@@ -37,6 +38,7 @@ public class Population implements ConfigurableObject
 	}
 
 	public void setConfigParams(ConfigParams params){
+		fitnessSharingType = params.getFitnessSharingType();
 		useFitnessSharing = params.useFitnessSharing();
 		sigma_sharing = params.getFitnessSharingSigma();
 		useFitnessSharingMultiSigma = params.useFitnessSharingMultiSigma();
@@ -208,6 +210,13 @@ public class Population implements ConfigurableObject
 		return mean_fitness / myIndividuals.length;
 	}
 
+	public double getMeanSharedFitness(){
+		double mean_fitness = 0.0;
+		for(Individual i: myIndividuals)
+			mean_fitness += i.getFitness();
+		return mean_fitness / myIndividuals.length;
+	}
+
 	private void setFitnessFactorSharing(){
 		double distance_sum, fitness_factor;
 		Individual individual;
@@ -274,12 +283,23 @@ public class Population implements ConfigurableObject
 	}
 
 	private double calcFitnessSharing(Individual individual, double sum_dist){
-		if(fitnessSharingBeta == 1 || individual.getPureFitness() < 0){
-			return 1.0 / sum_dist;
+		switch(fitnessSharingType){
+			case STANDARD:
+				if(fitnessSharingBeta == 1 || individual.getPureFitness() < 0){
+					return 1.0 / sum_dist;
+				}
+				else{
+					return (1.0 / sum_dist) * Math.pow(Math.max(0, individual.getPureFitness()), fitnessSharingBeta - 1);
+				}
+			case RELATIVE:
+				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta));
+			case LOG_SCALE:
+				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / individual.getPureFitness() *
+						Math.exp(Math.log10(individual.getPureFitness()+1e-5));
+			case SQRT:
+				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / Math.pow(individual.getPureFitness(), 0.75);
 		}
-		else{
-			return (1.0 / sum_dist) * Math.pow(Math.max(0, individual.getPureFitness()), fitnessSharingBeta - 1);
-		}
+		return 1.0;
 	}
 
 	private void resetFitnessFactors(){

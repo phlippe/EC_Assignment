@@ -74,7 +74,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 		//System.out.println("Contest");
 		for(int cont_pos=0;cont_pos<size_population + size_children; cont_pos++){
 			//System.out.print(cont_pos + ": ");
-			double best_fitness = -1.0;
+			double best_fitness = -Double.MAX_VALUE;
 			int best_index = -1;
 			for(int c_index=0;c_index<tournament_pos.length;c_index++){
 				//System.out.print(tournament_pos[c_index].get(cont_pos).obj.id + " [" + tournament_pos[c_index].get(cont_pos).obj.score + "]" + " vs. ");

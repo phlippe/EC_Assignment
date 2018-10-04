@@ -1,5 +1,6 @@
 package configuration;
 
+import individuals.FitnessSharingType;
 import recombination.RecombinationType;
 import selection.ParentSelectionStochasticType;
 import selection.ParentSelectionType;
@@ -12,6 +13,7 @@ public class ConfigParams {
     private int numberRecombinations;
     private int parentArity;
 
+    private FitnessSharingType fitnessSharingType = FitnessSharingType.STANDARD;
     private boolean useFitnessSharing = false;
     private double fitnessSharingSigma = 0.1;
     private boolean useFitnessSharingMultiSigma = false;
@@ -337,5 +339,15 @@ public class ConfigParams {
 
     public void setFitnessSharingBetaMaxSteps(double fitnessSharingBetaMaxSteps) {
         this.fitnessSharingBetaMaxSteps = fitnessSharingBetaMaxSteps;
+    }
+
+    public FitnessSharingType getFitnessSharingType()
+    {
+        return fitnessSharingType;
+    }
+
+    public void setFitnessSharingType(FitnessSharingType fitnessSharingType)
+    {
+        this.fitnessSharingType = fitnessSharingType;
     }
 }

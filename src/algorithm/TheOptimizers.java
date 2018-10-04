@@ -16,7 +16,7 @@ public class TheOptimizers
     private int evaluations_limit_;
     private double best_score;
     private EvolutionaryAlgorithm eval_cycle;
-    private static final boolean SILENT_RUN = true;
+    private static final boolean SILENT_RUN = false;
 
     public TheOptimizers() {
         rnd_ = new Random();
