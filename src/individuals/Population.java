@@ -239,11 +239,16 @@ public class Population implements ConfigurableObject
 			if(isOldID && individual_ids[neighbor_index] == neighbor.getID()){
 				dist = distance_matrix[index][neighbor_index];
 			}
-			else {
-				if (useFitnessSharingMultiSigma) {
-					dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
-				} else {
-					dist = individual.getDistance(neighbor);
+			else{
+				if(neighbor_index < index){
+					dist = distance_matrix[neighbor_index][index];
+				}
+				else {
+					if (useFitnessSharingMultiSigma) {
+						dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
+					} else {
+						dist = individual.getDistance(neighbor);
+					}
 				}
 			}
 			if (useFitnessSharingMultiSigma) {
@@ -279,35 +284,43 @@ public class Population implements ConfigurableObject
 			return 0.0;
 		}
 		else{
-			return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+			if(fitnessSharingAlpha > 10)
+				return 1;
+			else
+				return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
 		}
 	}
 
 	private double calcFitnessSharing(Individual individual, double sum_dist){
+		double fitness_factor = 1.0;
 		switch(fitnessSharingType){
 			case STANDARD:
 				if(fitnessSharingBeta == 1 || individual.getPureFitness() < 0){
-					return 1.0 / sum_dist;
+					fitness_factor = 1.0 / sum_dist;
 				}
 				else{
-					return (1.0 / sum_dist) * Math.pow(Math.max(0, individual.getPureFitness()), fitnessSharingBeta - 1);
+					fitness_factor = (1.0 / sum_dist) * Math.pow(Math.max(0, individual.getPureFitness()), fitnessSharingBeta - 1);
 				}
+				break;
 			case RELATIVE:
-				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta));
+				fitness_factor = (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta));
+				break;
 			case LOG_SCALE:
-				return (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / individual.getPureFitness() *
+				fitness_factor = (1.0 - Math.pow(sum_dist / myIndividuals.length, fitnessSharingBeta)) / individual.getPureFitness() *
 						Math.exp(Math.log10(individual.getPureFitness()+1e-5));
+				break;
 			case SQRT:
-				return Math.pow((1.0 - sum_dist / myIndividuals.length), 1.0/fitnessSharingBeta) / Math.pow(individual.getPureFitness(), 0.75);
+				fitness_factor = Math.pow((1.0 - sum_dist / myIndividuals.length), 1.0/fitnessSharingBeta) / Math.pow(individual.getPureFitness(), 0.75);
+				break;
 			case PUSH_TO_LINE:
 				double my_dist = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
 				double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
 				if(mean_distance < desired_mean_distance){
-					return (1 + desired_mean_distance / mean_distance * my_dist);
+					fitness_factor = (1 + desired_mean_distance / mean_distance * my_dist);
 				}
-				return 1;
+				break;
 		}
-		return 1.0;
+		return fitness_factor;
 	}
 
 	private void resetFitnessFactors(){
