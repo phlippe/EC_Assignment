@@ -87,7 +87,11 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 			if(best_index == -1){
 				System.out.println("Found best index = -1 with best fitness "+ best_fitness+". Logging competitors: ");
 				for(int c_index=0;c_index<tournament_pos.length;c_index++) {
-					System.out.print(tournament_pos[c_index].get(cont_pos).obj.score + " vs ");
+					System.out.print(tournament_pos[c_index].get(cont_pos).obj.score + " (");
+					for(int i=0;i<population.size();i++)
+						if(population.get(i).getID() == tournament_pos[c_index].get(cont_pos).obj.id) {
+							System.out.print(population.get(i).getPureFitness() + ", " + population.get(i).getFitnessFactor() + ") " + " vs ");
+						}
 				}
 			}
 			tournament_pos[best_index].get(cont_pos).obj.increaseWins();

@@ -1,6 +1,5 @@
 package algorithm;
 
-import com.sun.deploy.trace.Trace;
 import configuration.ConfigParams;
 import configuration.Configuration;
 import individuals.GeneTypes;
@@ -87,6 +86,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceFile(TraceTags.MEAN_FITNESS_FACTOR_DEAD);
 		tracer.addTraceFile(TraceTags.MIN_AGE_DEAD);
 		tracer.addTraceFile(TraceTags.MEAN_SHARED_FITNESS);
+		tracer.addTraceFile(TraceTags.DESIRED_MEAN_DISTANCE);
+		tracer.addTraceFile(TraceTags.DESIRED_MEAN_FACTOR);
 	}
 
 	@Override
@@ -162,6 +163,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceContent(TraceTags.FITNESS_SHARING_BETA, population.getFitnessSharingBeta());
 		tracer.addTraceContent(TraceTags.FITNESS_SHARING_DISTANCE_SUM, population.getFitnessSharingMeanDistanceSum());
 		tracer.addTraceContent(TraceTags.MEAN_AGE_POPULATION, population.getMeanAge());
+		tracer.addTraceContent(TraceTags.DESIRED_MEAN_DISTANCE, population.getDesiredMeanDistance());
+		tracer.addTraceContent(TraceTags.DESIRED_MEAN_FACTOR, population.getDesiredMeanFactor());
 	}
 
 	@Override

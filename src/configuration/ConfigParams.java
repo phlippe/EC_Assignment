@@ -24,6 +24,11 @@ public class ConfigParams {
     private double fitnessSharingBetaMaxSteps = -1;
     private boolean fitnessSharingBetaExponential = true;
 
+    private double pushToLinePower = 1.0;
+    private boolean pushToLineFitnessSharing = false;
+    private double pushToLineStartVal = 4.0;
+    private double pushToLineEndCycle = 8000;
+
     private ParentSelectionType parentSelectionType = ParentSelectionType.TOURNAMENT_SELECTION;
     private ParentSelectionStochasticType parentSelectionStochasticType = ParentSelectionStochasticType.UNIVERSAL;
     private int parentTournamentSize = 25;
@@ -349,5 +354,37 @@ public class ConfigParams {
     public void setFitnessSharingType(FitnessSharingType fitnessSharingType)
     {
         this.fitnessSharingType = fitnessSharingType;
+    }
+
+    public double getPushToLinePower() {
+        return pushToLinePower;
+    }
+
+    public void setPushToLinePower(double pushToLinePower) {
+        this.pushToLinePower = pushToLinePower;
+    }
+
+    public boolean isPushToLineFitnessSharing() {
+        return pushToLineFitnessSharing;
+    }
+
+    public void setPushToLineFitnessSharing(boolean pushToLineFitnessSharing) {
+        this.pushToLineFitnessSharing = pushToLineFitnessSharing;
+    }
+
+    public double getPushToLineStartVal() {
+        return pushToLineStartVal;
+    }
+
+    public void setPushToLineStartVal(double pushToLineStartVal) {
+        this.pushToLineStartVal = pushToLineStartVal;
+    }
+
+    public double getPushToLineEndCycle() {
+        return pushToLineEndCycle;
+    }
+
+    public void setPushToLineEndCycle(double pushToLineEndCycle) {
+        this.pushToLineEndCycle = pushToLineEndCycle;
     }
 }

@@ -10,5 +10,6 @@ public enum FitnessSharingType
 	RELATIVE,
 	LOG_SCALE,
 	SQRT,
-	PUSH_TO_LINE;
+	PUSH_TO_LINE,
+	PUSH_TO_LINE_SYMMETRIC;
 }

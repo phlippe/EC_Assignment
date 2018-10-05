@@ -19,5 +19,7 @@ public class TraceTags {
     public static final String MEAN_FITNESS_FACTOR_DEAD = "dead_fitness_factor_mean";
     public static final String MEAN_DEAD_OFFSPRINGS = "dead_offsprings_mean";
     public static final String MEAN_SHARED_FITNESS = "factor_fitness_shared_mean";
+    public static final String DESIRED_MEAN_DISTANCE = "distance_desired_mean";
+    public static final String DESIRED_MEAN_FACTOR = "distance_desired_factor";
 
 }

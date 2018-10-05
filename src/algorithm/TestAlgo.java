@@ -55,8 +55,8 @@ public class TestAlgo
 		configParams2.setUseFitnessSharing(true);
 		configParams2.setUseFitnessSharingMultiSigma(false);
 		configParams2.setFitnessSharingSigma(0.03);
-		configParams2.setFitnessSharingBeta(0.5);
-		configParams2.setFitnessSharingAlpha(1000);
+		configParams2.setFitnessSharingBeta(1);
+		configParams2.setFitnessSharingAlpha(1);
 		double remaining_iterations = 12500;
 		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
 		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
@@ -64,9 +64,17 @@ public class TestAlgo
 		double offstep_prop = 0.4;
 		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
 		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
-		configParams2.setFitnessSharingBetaStep(9.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
+		configParams2.setFitnessSharingBetaStep(8.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
+//		double offstep_prop = 0.2;
+//		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
+//		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.2 - offstep_prop) * remaining_iterations);
+//		configParams2.setFitnessSharingBetaStep(4.0 / ((0.2) * remaining_iterations));
 		configParams2.setFitnessSharingBetaExponential(false);
-		configParams2.setFitnessSharingType(FitnessSharingType.SQRT);
+		configParams2.setFitnessSharingType(FitnessSharingType.PUSH_TO_LINE_SYMMETRIC);
+		configParams2.setPushToLineEndCycle(10000);
+		configParams2.setPushToLinePower(6);
+		configParams2.setPushToLineStartVal(4);
+		configParams2.setPushToLineFitnessSharing(false);
 		StandardConfig config2 = new StandardConfig(configParams2);
 
 		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
@@ -87,10 +95,10 @@ public class TestAlgo
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
         // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
         EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(false, "fitness_sharing_relative");
+		Tracer tracer = new Tracer(false, "fitness_sharing_push_to_line_symmetric");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 100);
+        swipeSeeds(eval_ea, eval, 100, 0);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){
@@ -118,6 +126,10 @@ public class TestAlgo
 	}
 
 	private static void swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs){
+		swipeSeeds(eval_ea, eval, number_of_runs, 0);
+	}
+
+	private static void swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs, int start_seed){
 	    double best_score = 0.0;
 	    double mean_score = 0.0;
 	    double worst_score = Double.MAX_VALUE;
@@ -128,7 +140,7 @@ public class TestAlgo
 
         String summary = "";
 	    for(int i=0;i<number_of_runs;i++){
-	        loc_score = executeExperiment(eval_ea, eval, i);
+	        loc_score = executeExperiment(eval_ea, eval, i + start_seed);
 	        if(loc_score > best_score)
 	            best_score = loc_score;
 	        if(loc_score < worst_score)

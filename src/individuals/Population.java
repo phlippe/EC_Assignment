@@ -29,6 +29,11 @@ public class Population implements ConfigurableObject
 	private long[] individual_ids;
 	private double mean_distance;
 
+	private double pushToLinePower;
+	private boolean pushToLineFitnessSharing;
+	private double pushToLineStartVal;
+	private double pushToLineEndCycle;
+
 	public Population(int size){
 		myIndividuals = new Individual[size];
 		maxFitness = -1;
@@ -50,6 +55,10 @@ public class Population implements ConfigurableObject
 		fitnessSharingBetaOffsetSteps = params.getFitnessSharingBetaOffsetSteps();
 		fitnessSharingBetaMaxSteps = params.getFitnessSharingBetaMaxSteps();
 		fitnessSharingBetaInit = params.getFitnessSharingBeta();
+		pushToLinePower = params.getPushToLinePower();
+		pushToLineFitnessSharing = params.isPushToLineFitnessSharing();
+		pushToLineStartVal = params.getPushToLineStartVal();
+		pushToLineEndCycle = params.getPushToLineEndCycle();
 	}
 
 	public Individual get(int index){
@@ -314,13 +323,53 @@ public class Population implements ConfigurableObject
 				break;
 			case PUSH_TO_LINE:
 				double my_dist = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
-				double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
+				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
+				double desired_mean_distance = getDesiredMeanDistance();
 				if(mean_distance < desired_mean_distance){
-					fitness_factor = (1 + desired_mean_distance / mean_distance * my_dist);
+					fitness_factor = (Math.pow(desired_mean_distance / mean_distance, pushToLinePower) * my_dist / individual.getPureFitness());
+					if(pushToLineFitnessSharing){
+						fitness_factor += Math.pow((1.0 - sum_dist / myIndividuals.length), 1.0/fitnessSharingBeta);
+					}
+					else{
+						fitness_factor += 1;
+					}
 				}
 				break;
+			case PUSH_TO_LINE_SYMMETRIC:
+				double my_dist2 = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
+				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
+				double desired_mean_distance2 = getDesiredMeanDistance();
+				if(mean_distance < desired_mean_distance2){
+					double fit_p = Math.pow(mean_distance / desired_mean_distance2,2);
+					fitness_factor = fit_p +
+							(1 - fit_p) * 10 * my_dist2 / individual.getPureFitness();
+				}
+
 		}
 		return fitness_factor;
+	}
+
+	public double getDesiredMeanDistance(){
+		double beta = 1.0 / (pushToLineStartVal + 1);
+		double alpha = (1 - beta) / pushToLineEndCycle;
+		double desired_mean_distance = 1.0 / (alpha * population_age + beta) - 1;
+		return (desired_mean_distance > 0 ? desired_mean_distance : 0);
+	}
+
+	public double getDesiredMeanFactor() {
+		double desired_mean_distance = getDesiredMeanDistance();
+		if (desired_mean_distance > mean_distance) {
+			switch (fitnessSharingType){
+				case PUSH_TO_LINE:
+					return Math.pow(getDesiredMeanDistance() / mean_distance, pushToLinePower);
+				case PUSH_TO_LINE_SYMMETRIC:
+					return (1 - mean_distance / desired_mean_distance);
+				default:
+					return 1;
+			}
+		}
+		else
+			return 1;
 	}
 
 	private void resetFitnessFactors(){
@@ -402,6 +451,7 @@ public class Population implements ConfigurableObject
 		s += "Population size: " + myIndividuals.length + "\n";
 		s += "Use Fitness Sharing: " + useFitnessSharing + "\n";
 		if(useFitnessSharing){
+			s += "Type of fitness sharing: " + fitnessSharingType + "\n";
 			s += "Use self-adapted multi sigmas for fitness sharing: " + useFitnessSharingMultiSigma + "\n";
 			if(!useFitnessSharingMultiSigma)
 				s += "Shared sigma: " + sigma_sharing + "\n";
@@ -410,6 +460,11 @@ public class Population implements ConfigurableObject
 			s += "Beta offset steps: " + fitnessSharingBetaOffsetSteps + "\n";
 			s += "Beta step size: " + fitnessSharingBetaStep + " " + (fitnessSharingBetaExponential ? "(exponential)":"(linear)") + "\n";
 			s += "Beta max steps: " + fitnessSharingBetaMaxSteps + "\n";
+			s += "-- Push to line --\n";
+			s += "Start value: " + pushToLineStartVal + "\n";
+			s += "End cycle: " + pushToLineEndCycle + "\n";
+			s += "Power: " + pushToLinePower + "\n";
+			s += "Use Fitness sharing: " + pushToLineFitnessSharing + "\n";
 		}
 		return s;
 	}
