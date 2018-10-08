@@ -340,7 +340,7 @@ public class Population implements ConfigurableObject
 				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
 				double desired_mean_distance2 = getDesiredMeanDistance();
 				if(mean_distance < desired_mean_distance2){
-					double fit_p = Math.pow(mean_distance / desired_mean_distance2,2);
+					double fit_p = Math.pow(mean_distance / desired_mean_distance2,4);
 					fitness_factor = fit_p +
 							(1 - fit_p) * 10 * my_dist2 / individual.getPureFitness();
 				}
@@ -352,7 +352,19 @@ public class Population implements ConfigurableObject
 	public double getDesiredMeanDistance(){
 		double beta = 1.0 / (pushToLineStartVal + 1);
 		double alpha = (1 - beta) / pushToLineEndCycle;
-		double desired_mean_distance = 1.0 / (alpha * population_age + beta) - 1;
+		PushLineType pushLineType = PushLineType.INVERS;
+		double desired_mean_distance = 0;
+		switch(pushLineType){
+			case INVERS:
+				desired_mean_distance = 1.0 / (alpha * population_age + beta) - 1;
+				break;
+			case LINEAR:
+				desired_mean_distance = - beta/alpha * population_age + beta;
+				break;
+			case SQUARED:
+				desired_mean_distance = - beta * 1.0 / (alpha * alpha) * population_age * population_age + beta;
+				break;
+		}
 		return (desired_mean_distance > 0 ? desired_mean_distance : 0);
 	}
 

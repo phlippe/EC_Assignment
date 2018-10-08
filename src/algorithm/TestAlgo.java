@@ -10,6 +10,7 @@ import island.IslandParams;
 import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
+import recombination.RecombinationType;
 import selection.SurvivorSelectionType;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class TestAlgo
         configParams.setUseFitnessSharingMultiSigma(false);
         StandardConfig config = new StandardConfig(configParams);
 
-		ConfigParams configParams2 = new ConfigParams(400, 40, 2);
+		ConfigParams configParams2 = new ConfigParams(400, 80, 2);
 		configParams2.setParentTournamentSize(2);
 		configParams2.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
 		configParams2.setSurvivorTournamentSize(2);
@@ -71,10 +72,12 @@ public class TestAlgo
 //		configParams2.setFitnessSharingBetaStep(4.0 / ((0.2) * remaining_iterations));
 		configParams2.setFitnessSharingBetaExponential(false);
 		configParams2.setFitnessSharingType(FitnessSharingType.PUSH_TO_LINE_SYMMETRIC);
-		configParams2.setPushToLineEndCycle(10000);
+		configParams2.setPushToLineEndCycle(3000);
 		configParams2.setPushToLinePower(6);
 		configParams2.setPushToLineStartVal(4);
 		configParams2.setPushToLineFitnessSharing(false);
+		//configParams2.setRecombinationType(RecombinationType.BLEND_RANDOM_CROSSOVER);
+		//configParams2.setRecombinationBlendRandomSigma(0.1);
 		StandardConfig config2 = new StandardConfig(configParams2);
 
 		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
@@ -95,10 +98,10 @@ public class TestAlgo
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
         // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
         EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(false, "fitness_sharing_push_to_line_symmetric");
+		Tracer tracer = new Tracer(false, "fitness_sharing_push_to_line_symmetric_best");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 100, 0);
+        swipeSeeds(eval_ea, eval, 1000, 0);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){
@@ -141,6 +144,8 @@ public class TestAlgo
         String summary = "";
 	    for(int i=0;i<number_of_runs;i++){
 	        loc_score = executeExperiment(eval_ea, eval, i + start_seed);
+	        if(i == 0)
+				System.out.println(eval_ea.getLogString());
 	        if(loc_score > best_score)
 	            best_score = loc_score;
 	        if(loc_score < worst_score)
