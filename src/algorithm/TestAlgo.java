@@ -28,6 +28,9 @@ public class TestAlgo
 {
 
 	public static void main(String args[]){
+
+		writeOutFunctionData();
+		System.exit(0);
 		int config_index = Integer.parseInt(args[0]);
 		double reset_prob = 0;
 
@@ -206,6 +209,48 @@ public class TestAlgo
 				break;
 		}
 		return eval;
+	}
+
+	private static void writeOutFunctionData() {
+		double[] best_pos = {-1.4154604737234566, -3.0429615563373047, -0.503070202106929, 2.343867130236364,
+				2.496793683159909, 0.37356189364284503, -2.1029163717550596, -4.04357034048021,
+				0.007292472085812699, -1.8254043393650436};
+		double[] mean_pos = {-1.4204561878210777, -3.0475985806287285, -0.510800536874158, 2.328720589408676,
+				2.4911761407908455, 0.38137308876024045, -2.084474354738977, -4.024820818722045,
+				-0.00727655406965648, -1.815969683542992};
+		double[] child = new double[10];
+		int number_steps = 1000;
+		ContestEvaluation eval_func = createEval(EvalType.KATSUURA);
+		for (int axis_x = 0; axis_x < mean_pos.length; axis_x++) {
+			for(int axis_y = axis_x+1; axis_y < mean_pos.length; axis_y++){
+				System.out.println("Axis x: " + axis_x + ", Axis y: "+ axis_y);
+				StringBuilder stringBuilder = new StringBuilder();
+				for (int index_x = 0; index_x < number_steps; index_x++) {
+					for (int index_y = 0; index_y < number_steps; index_y++) {
+						for (int index_gene = 0; index_gene < mean_pos.length; index_gene++) {
+							if (index_gene != axis_x && index_gene != axis_y) {
+								child[index_gene] = best_pos[index_gene];
+							} else {
+								if (index_gene == axis_x)
+									child[index_gene] = mean_pos[index_gene] + (index_x / (0.25 * number_steps) - 1) * (best_pos[index_gene] - mean_pos[index_gene]);
+								else
+									child[index_gene] = mean_pos[index_gene] + (index_y / (0.25 * number_steps) - 1) * (best_pos[index_gene] - mean_pos[index_gene]);
+							}
+						}
+						double fitness = (Double) eval_func.evaluate(child);
+						stringBuilder.append(fitness);
+						stringBuilder.append("\n");
+					}
+				}
+				new File("func_data/").mkdirs();
+				String filename = "func_data/katsuura_" + axis_x + "_" + axis_y + ".txt";
+				try (PrintWriter out = new PrintWriter(filename)) {
+					out.println(stringBuilder.toString());
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		}
 	}
 
 }
