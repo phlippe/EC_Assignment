@@ -28,11 +28,13 @@ public class Population implements ConfigurableObject
 	private double[][] distance_matrix;
 	private long[] individual_ids;
 	private double mean_distance;
+	private double[] mean_position;
 
 	private double pushToLinePower;
 	private boolean pushToLineFitnessSharing;
 	private double pushToLineStartVal;
 	private double pushToLineEndCycle;
+	private double pushToLineGradientFactor;
 
 	public Population(int size){
 		myIndividuals = new Individual[size];
@@ -59,6 +61,7 @@ public class Population implements ConfigurableObject
 		pushToLineFitnessSharing = params.isPushToLineFitnessSharing();
 		pushToLineStartVal = params.getPushToLineStartVal();
 		pushToLineEndCycle = params.getPushToLineEndCycle();
+		pushToLineGradientFactor = params.getPushToLineGradientFactor();
 	}
 
 	public Individual get(int index){
@@ -115,6 +118,10 @@ public class Population implements ConfigurableObject
 			}
 		}
 		TheOptimizers.println("New max fitness: "+maxFitness);
+	}
+
+	public double getMaxFitness(){
+		return maxFitness;
 	}
 
 	public Individual getMaxIndividual(){
@@ -289,14 +296,21 @@ public class Population implements ConfigurableObject
 	}
 
 	private double calcFitnessDistance(double distance, double sigma){
-		if(distance > sigma){
-			return 0.0;
+		if(fitnessSharingType != FitnessSharingType.PUSH_TO_LINE && fitnessSharingType != FitnessSharingType.PUSH_TO_LINE_SYMMETRIC) {
+			if (distance > sigma) {
+				return 0.0;
+			} else {
+				if (fitnessSharingAlpha > 10)
+					return 1;
+				else
+					if(fitnessSharingAlpha == 1)
+						return 1 - distance / sigma;
+					else
+						return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+			}
 		}
 		else{
-			if(fitnessSharingAlpha > 10)
-				return 1;
-			else
-				return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+			return distance;
 		}
 	}
 
@@ -322,6 +336,7 @@ public class Population implements ConfigurableObject
 				fitness_factor = Math.pow((1.0 - sum_dist / myIndividuals.length), 1.0/fitnessSharingBeta) / Math.pow(individual.getPureFitness(), 0.75);
 				break;
 			case PUSH_TO_LINE:
+				//double my_dist = sum_dist / myIndividuals.length;
 				double my_dist = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
 				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
 				double desired_mean_distance = getDesiredMeanDistance();
@@ -336,13 +351,16 @@ public class Population implements ConfigurableObject
 				}
 				break;
 			case PUSH_TO_LINE_SYMMETRIC:
-				double my_dist2 = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
+				double my_dist2 = sum_dist / myIndividuals.length;
+				//double my_dist2 = individual.getDistance(mean_position);
+				//System.out.println(my_dist2);
+				// double my_dist2 = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
 				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
 				double desired_mean_distance2 = getDesiredMeanDistance();
 				if(mean_distance < desired_mean_distance2){
-					double fit_p = Math.pow(mean_distance / desired_mean_distance2,4);
+					double fit_p = Math.pow(mean_distance / desired_mean_distance2,1);
 					fitness_factor = fit_p +
-							(1 - fit_p) * 10 * my_dist2 / individual.getPureFitness();
+							(1 - fit_p) * my_dist2 / individual.getPureFitness();
 				}
 
 		}
@@ -350,13 +368,13 @@ public class Population implements ConfigurableObject
 	}
 
 	public double getDesiredMeanDistance(){
-		double beta = 1.0 / (pushToLineStartVal + 1);
+		double beta = 1.0 / (pushToLineStartVal / pushToLineGradientFactor + 1);
 		double alpha = (1 - beta) / pushToLineEndCycle;
 		PushLineType pushLineType = PushLineType.INVERS;
 		double desired_mean_distance = 0;
 		switch(pushLineType){
 			case INVERS:
-				desired_mean_distance = 1.0 / (alpha * population_age + beta) - 1;
+				desired_mean_distance = (1.0 / (alpha * population_age + beta) - 1) * pushToLineGradientFactor;
 				break;
 			case LINEAR:
 				desired_mean_distance = - beta/alpha * population_age + beta;
@@ -392,10 +410,13 @@ public class Population implements ConfigurableObject
 
 	public void prepareCycle(){
 		if(useFitnessSharing){
-			mean_distance = getMeanDistance(getMeanPosition());
-			setFitnessFactorSharing();
-			for(int i=0;i<individual_ids.length;i++)
-				individual_ids[i] = myIndividuals[i].getID();
+			mean_position = getMeanPosition();
+			mean_distance = getMeanDistance(mean_position);
+			if(mean_distance < getDesiredMeanDistance()) {
+				setFitnessFactorSharing();
+				for (int i = 0; i < individual_ids.length; i++)
+					individual_ids[i] = myIndividuals[i].getID();
+			}
 		}
 	}
 
@@ -475,6 +496,7 @@ public class Population implements ConfigurableObject
 			s += "-- Push to line --\n";
 			s += "Start value: " + pushToLineStartVal + "\n";
 			s += "End cycle: " + pushToLineEndCycle + "\n";
+			s += "Gradient factor: " + pushToLineGradientFactor + "\n";
 			s += "Power: " + pushToLinePower + "\n";
 			s += "Use Fitness sharing: " + pushToLineFitnessSharing + "\n";
 		}
