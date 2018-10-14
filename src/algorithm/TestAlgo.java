@@ -29,8 +29,6 @@ public class TestAlgo
 
 	public static void main(String args[]){
 
-		writeOutFunctionData();
-		System.exit(0);
 		int config_index = Integer.parseInt(args[0]);
 		double reset_prob = 0;
 
@@ -61,20 +59,23 @@ public class TestAlgo
 		configParams2.setFitnessSharingSigma(0.03);
 		configParams2.setFitnessSharingBeta(1);
 		configParams2.setFitnessSharingAlpha(1);
-		double remaining_iterations = 12500;
+		double remaining_iterations = 6250;
 		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
 		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
 		// configParams2.setFitnessSharingBetaExponential(true);
-		double offstep_prop = 0.4;
-		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
-		configParams2.setFitnessSharingBetaStep(8.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
+//		double offstep_prop = 0.4;
+//		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
+//		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
+//		configParams2.setFitnessSharingBetaStep(8.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
+		configParams2.setFitnessSharingBetaOffsetSteps(2.0 * remaining_iterations);
+		configParams2.setFitnessSharingBetaMaxSteps((2 - 0.334) * remaining_iterations);
+		configParams2.setFitnessSharingBetaStep(-0.03 / (0.333 * remaining_iterations));
 //		double offstep_prop = 0.2;
 //		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
 //		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.2 - offstep_prop) * remaining_iterations);
 //		configParams2.setFitnessSharingBetaStep(4.0 / ((0.2) * remaining_iterations));
 		configParams2.setFitnessSharingBetaExponential(false);
-		configParams2.setFitnessSharingType(FitnessSharingType.PUSH_TO_LINE_SYMMETRIC);
+		configParams2.setFitnessSharingType(FitnessSharingType.STANDARD);
 		configParams2.setPushToLineEndCycle(3000);
 		configParams2.setPushToLinePower(6);
 		configParams2.setPushToLineStartVal(4);
@@ -101,10 +102,10 @@ public class TestAlgo
         islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
         // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
         EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(false, "fitness_sharing_push_to_line_symmetric_best");
+		Tracer tracer = new Tracer(true, "fitness_sharing_sigma_10_00_00");
         eval_ea.addTracer(tracer);
         ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 1000, 0);
+        swipeSeeds(eval_ea, eval, 100, 0);
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){

@@ -21,6 +21,7 @@ public class Population implements ConfigurableObject
 	private FitnessSharingType fitnessSharingType = FitnessSharingType.STANDARD;
 	private boolean useFitnessSharing = false;
 	private double sigma_sharing = -1;
+	private double sigma_sharing_init = -1;
 	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
 	private double fitnessSharingBetaStep, fitnessSharingBetaOffsetSteps, fitnessSharingBetaMaxSteps;
 	private boolean fitnessSharingBetaExponential;
@@ -47,6 +48,7 @@ public class Population implements ConfigurableObject
 		fitnessSharingType = params.getFitnessSharingType();
 		useFitnessSharing = params.useFitnessSharing();
 		sigma_sharing = params.getFitnessSharingSigma();
+		sigma_sharing_init = params.getFitnessSharingSigma();
 		useFitnessSharingMultiSigma = params.useFitnessSharingMultiSigma();
 		fitnessSharingAlpha = params.getFitnessSharingAlpha();
 		fitnessSharingBeta = params.getFitnessSharingBeta();
@@ -100,6 +102,7 @@ public class Population implements ConfigurableObject
 		}
 		population_age = 0;
 		fitnessSharingBeta = fitnessSharingBetaInit;
+		sigma_sharing = sigma_sharing_init;
 		for(int i=0;i<individual_ids.length;i++)
 			individual_ids[i] = -1;
 	}
@@ -137,10 +140,18 @@ public class Population implements ConfigurableObject
 		if(population_age > fitnessSharingBetaOffsetSteps &&
 				(fitnessSharingBetaMaxSteps == -1 || population_age <= fitnessSharingBetaMaxSteps)) {
 			if (fitnessSharingBetaExponential) {
-				fitnessSharingBeta *= fitnessSharingBetaStep;
+				// fitnessSharingBeta *= fitnessSharingBetaStep;
+				// fitnessSharingAlpha *= fitnessSharingBetaStep;
+				sigma_sharing *= fitnessSharingBetaStep;
 			} else {
-				fitnessSharingBeta += fitnessSharingBetaStep;
+				// fitnessSharingBeta += fitnessSharingBetaStep;
+				// fitnessSharingAlpha += fitnessSharingBetaStep;
+				sigma_sharing += fitnessSharingBetaStep;
 			}
+		}
+		else{
+			if(population_age > fitnessSharingBetaMaxSteps)
+				sigma_sharing = 0.0;
 		}
 	}
 
@@ -289,14 +300,22 @@ public class Population implements ConfigurableObject
 	}
 
 	private double calcFitnessDistance(double distance, double sigma){
-		if(distance > sigma){
-			return 0.0;
+		if(distance == 0){
+			return 1;
 		}
-		else{
-			if(fitnessSharingAlpha > 10)
-				return 1;
-			else
-				return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+		else {
+			if (sigma == 0 || distance > sigma) {
+				return 0.0;
+			} else {
+				if (fitnessSharingAlpha > 10)
+					return 1;
+				else {
+					if (fitnessSharingAlpha == 1)
+						return 1 - distance / sigma;
+					else
+						return 1 - Math.pow((distance / sigma), fitnessSharingAlpha);
+				}
+			}
 		}
 	}
 
