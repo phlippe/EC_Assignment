@@ -88,6 +88,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		tracer.addTraceFile(TraceTags.MEAN_SHARED_FITNESS);
 		tracer.addTraceFile(TraceTags.DESIRED_MEAN_DISTANCE);
 		tracer.addTraceFile(TraceTags.DESIRED_MEAN_FACTOR);
+		tracer.addTraceFile(TraceTags.POPULATION_POSITION);
 	}
 
 	@Override
@@ -126,6 +127,8 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 	private void traceCyclePopulation(){
 		tracer.addTraceContent(TraceTags.MEAN_FITNESS_FACTOR, population.getMeanFitnessFactor());
 		tracer.addTraceContent(TraceTags.MEAN_SHARED_FITNESS, population.getMeanSharedFitness());
+		if(number_cycles % 100 == 0)
+			tracer.addTraceContent(TraceTags.POPULATION_POSITION, population.traceIndDist());
 	}
 
 	private void traceRemovedIndividuals(ArrayList<Individual> removed_individuals) {

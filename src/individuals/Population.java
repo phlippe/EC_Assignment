@@ -386,6 +386,29 @@ public class Population implements ConfigurableObject
 		return (desired_mean_distance > 0 ? desired_mean_distance : 0);
 	}
 
+	public String traceIndDist(){
+		StringBuilder stringBuilder = new StringBuilder();
+		if(mean_distance < getDesiredMeanDistance()) {
+			stringBuilder.append(mean_distance / getDesiredMeanDistance());
+		}
+		else{
+			stringBuilder.append(1);
+		}
+		stringBuilder.append(" | ");
+		for(int i=0;i<myIndividuals.length;i++) {
+			if(i > 0)
+				stringBuilder.append(",");
+			stringBuilder.append(myIndividuals[i].getPureFitness());
+		}
+		stringBuilder.append(" | ");
+		for(int i=0;i<myIndividuals.length;i++){
+			if(i > 0)
+				stringBuilder.append(",");
+			stringBuilder.append(myIndividuals[i].getDistanceSum() / myIndividuals.length);
+		}
+		return stringBuilder.toString();
+	}
+
 	public double getDesiredMeanFactor() {
 		double desired_mean_distance = getDesiredMeanDistance();
 		if (desired_mean_distance > mean_distance) {
