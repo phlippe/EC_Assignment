@@ -409,6 +409,24 @@ public class Population implements ConfigurableObject
 		return stringBuilder.toString();
 	}
 
+	public String traceDistToCenter(){
+		StringBuilder stringBuilder = new StringBuilder();
+		for(int i=0;i<myIndividuals.length;i++) {
+			if(i > 0)
+				stringBuilder.append(",");
+			stringBuilder.append(myIndividuals[i].getPureFitness());
+		}
+		stringBuilder.append(" | ");
+		double[] center = new double[10];
+		for(int i=0;i<center.length;i++) center[i] = 0;
+		for(int i=0;i<myIndividuals.length;i++){
+			if(i > 0)
+				stringBuilder.append(",");
+			stringBuilder.append(myIndividuals[i].getDistance(center));
+		}
+		return stringBuilder.toString();
+	}
+
 	public double getDesiredMeanFactor() {
 		double desired_mean_distance = getDesiredMeanDistance();
 		if (desired_mean_distance > mean_distance) {

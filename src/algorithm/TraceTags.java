@@ -22,5 +22,6 @@ public class TraceTags {
     public static final String DESIRED_MEAN_DISTANCE = "distance_desired_mean";
     public static final String DESIRED_MEAN_FACTOR = "distance_desired_factor";
     public static final String POPULATION_POSITION = "individual_distribution";
+    public static final String POPULATION_DIST = "individual_dist_to_center";
 
 }
