@@ -140,13 +140,13 @@ public class Population implements ConfigurableObject
 		if(population_age > fitnessSharingBetaOffsetSteps &&
 				(fitnessSharingBetaMaxSteps == -1 || population_age <= fitnessSharingBetaMaxSteps)) {
 			if (fitnessSharingBetaExponential) {
-				fitnessSharingBeta *= fitnessSharingBetaStep;
+				// fitnessSharingBeta *= fitnessSharingBetaStep;
 				// fitnessSharingAlpha *= fitnessSharingBetaStep;
-				// sigma_sharing *= fitnessSharingBetaStep;
+				sigma_sharing *= fitnessSharingBetaStep;
 			} else {
-				fitnessSharingBeta += fitnessSharingBetaStep;
+				// fitnessSharingBeta += fitnessSharingBetaStep;
 				// fitnessSharingAlpha += fitnessSharingBetaStep;
-				// sigma_sharing += fitnessSharingBetaStep;
+				sigma_sharing += fitnessSharingBetaStep;
 			}
 		}
 		else{
