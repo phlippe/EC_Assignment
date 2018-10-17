@@ -76,10 +76,10 @@ public class TheOptimizers
         // init population
         // calculate fitness
         TheOptimizers.println("Run");
-        while (evals < evaluations_limit_) {
+        while (evals < evaluations_limit_ && eval_cycle.getBestFitness() < 10.0) {
             eval_cycle.run_single_cycle();
             evals += eval_cycle.getEvalsPerCycle();
-            if (evals % 10000 == 0) {
+            if (evals % 1000 == 0) {
                 TheOptimizers.println("Evaluated " + evals + " steps");
             }
         }

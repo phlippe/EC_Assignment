@@ -1,9 +1,6 @@
 package algorithm;
 
-import configuration.ConfigParams;
-import configuration.Configuration;
-import configuration.ExampleConfig;
-import configuration.StandardConfig;
+import configuration.*;
 import individuals.FitnessSharingType;
 import island.DistributedEvolutionaryCycle;
 import island.IslandParams;
@@ -34,78 +31,26 @@ public class TestAlgo
 		int config_index = Integer.parseInt(args[0]);
 		double reset_prob = 0;
 
-//		ConfigParams configParams = getBestKatsuuraConfig();
-//		StandardConfig config = new StandardConfig(configParams);
-//		EvolutionaryCycle eval_ea = new EvolutionaryCycle(config);
-//		ContestEvaluation eval = createEval(EvalType.KATSUURA);
-//      swipeSeeds(eval_ea, eval, 1000);
-
-		ConfigParams configParams = new ConfigParams(100, 10, 2);
-		configParams.setParentTournamentSize(2);
-		configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams.setSurvivorTournamentSize(2);
-		configParams.setMutationMultiSigmaInit(0.01);
-		configParams.setMutationMultiSigmaFactor(0.8);
-		configParams.setUseFitnessSharing(false);
-		configParams.setUseFitnessSharingMultiSigma(false);
-		StandardConfig config = new StandardConfig(configParams);
-
-		ConfigParams configParams2 = new ConfigParams(400, 80, 2);
-		configParams2.setParentTournamentSize(2);
-		configParams2.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams2.setSurvivorTournamentSize(2);
-		configParams2.setMutationMultiSigmaInit(0.01);
-		configParams2.setMutationMultiSigmaFactor(0.8);
-		configParams2.setUseFitnessSharing(false);
-		configParams2.setUseFitnessSharingMultiSigma(false);
-		configParams2.setFitnessSharingSigma(0.03);
-		configParams2.setFitnessSharingBeta(1);
-		configParams2.setFitnessSharingAlpha(1);
-		double remaining_iterations = 6250;
-		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
-		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
-		// configParams2.setFitnessSharingBetaExponential(true);
-		double offstep_prop = 0.4;
-		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
-		configParams2.setFitnessSharingBetaStep(8.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
-//		double offstep_prop = 0.2;
-//		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-//		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.2 - offstep_prop) * remaining_iterations);
-//		configParams2.setFitnessSharingBetaStep(4.0 / ((0.2) * remaining_iterations));
-		configParams2.setFitnessSharingBetaExponential(false);
-		configParams2.setFitnessSharingType(FitnessSharingType.PUSH_TO_LINE_SYMMETRIC);
-		configParams2.setPushToLineEndCycle(3000);
-		configParams2.setPushToLinePower(6);
-		configParams2.setPushToLineStartVal(4);
-		configParams2.setPushToLineGradientFactor(4);
-		configParams2.setPushToLineFitnessSharing(false);
-		//configParams2.setRecombinationType(RecombinationType.BLEND_RANDOM_CROSSOVER);
-		//configParams2.setRecombinationBlendRandomSigma(0.1);
-		StandardConfig config2 = new StandardConfig(configParams2);
-
-		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
-		configParams3.setParentTournamentSize(2);
-		configParams3.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams3.setSurvivorTournamentSize(2);
-		configParams3.setMutationMultiSigmaInit(0.01);
-		configParams3.setMutationMultiSigmaFactor(0.8);
-		configParams3.setUseFitnessSharing(true);
-		configParams3.setUseFitnessSharingMultiSigma(false);
-		configParams3.setFitnessSharingSigma(0.0001);
-		StandardConfig config3 = new StandardConfig(configParams3);
-
-		StandardConfig[] allConfigs = {config, config2, config3, config, config2, config3};
-
-		IslandParams islandParams = new IslandParams(1000, 5);
-		islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
-		islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
-		// DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
-		EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(true, "plain_dist_center");
+		// EvolutionaryCycle eval_ea = new EvolutionaryCycle(new StandardConfig(getBestBentCigarConfig(config_index)));
+		TheOptimizers a = new TheOptimizers();
+		a.setSeed(0);
+		EvolutionaryAlgorithm eval_ea = new CMAES();
+		Tracer tracer = new Tracer(false, "plain_dist_center");
 		eval_ea.addTracer(tracer);
-		ContestEvaluation eval = createEval(EvalType.KATSUURA);
-		swipeSeeds(eval_ea, eval, 1, 0);
+		ContestEvaluation eval = createEval(EvalType.BENT_CIGAR);
+		swipeSeeds(eval_ea, eval, 1000, 0);
+	}
+
+	private static ConfigParams getBestBentCigarConfig(int config_index){
+		ConfigParams configParams = new ConfigParams(100, 20, 2);
+		configParams.setParentTournamentSize(5);
+		configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+		configParams.setSurvivorTournamentSize(10);
+		configParams.setMutationMultiSigmaInit(0.2);
+		configParams.setMutationMultiSigmaFactor(2.1);
+		configParams.setRecombinationType(RecombinationType.BLEND_RANDOM_CROSSOVER);
+		configParams.setRecombinationBlendRandomSigma(0.3);
+		return configParams;
 	}
 
 	private static ConfigParams getBestKatsuuraConfig(){
@@ -168,10 +113,12 @@ public class TestAlgo
 		long startTime = System.currentTimeMillis();
 		long lastPrintTime = -1;
 		long currentTime;
+		int perfect_score = 0;
 
 		String summary = "";
 		for(int i=0;i<number_of_runs;i++){
 			loc_score = executeExperiment(eval_ea, eval, i + start_seed);
+			if(loc_score == 10.0) perfect_score++;
 			System.out.println(loc_score);
 			if(writeLog &&                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     i == 0)
 				System.out.println(eval_ea.getLogString());
@@ -188,6 +135,7 @@ public class TestAlgo
 					System.out.println("Best score: " + best_score);
 					System.out.println("Worst score: " + worst_score);
 					System.out.println("Mean score: " + (mean_score / (i + 1)));
+					System.out.println("Reached perfect score: " + perfect_score);
 					double expected_runtime = (currentTime - startTime) / (i + 1.0) * (number_of_runs - i - 1) / 1000.0;
 					System.out.print("Expected runtime remaining: ");
 					int minutes = 0;
@@ -211,11 +159,13 @@ public class TestAlgo
 			Date date = new Date();
 			new File("logs/").mkdirs();
 			String filename = "logs/swipe_" + (eval_ea.getName().length() == 0 ? "" : eval_ea.getName() + "_") + dateFormat.format(date) + ".txt";
+			/*
 			try (PrintWriter out = new PrintWriter(filename)) {
 				out.println(summary);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
+			*/
 		}
 		return mean_score;
 	}
