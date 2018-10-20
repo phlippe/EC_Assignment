@@ -6,7 +6,7 @@ import javabbob.JNIfgeneric.Params;
 import org.vu.contest.ContestEvaluation;
 
 public class KatsuuraEvaluation implements ContestEvaluation {
-	private static final int EVALS_LIMIT_ = 1000000;
+	public static final int EVALS_LIMIT_ = 1000000;
 	private static final int bbobid_ = 23;
 	private static final double BASE_ = 7.73838444D;
 	private JNIfgeneric function_ = null;

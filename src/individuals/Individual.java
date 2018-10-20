@@ -172,4 +172,18 @@ public class Individual
 		return dist;
 	}
 
+	public double getDistance(Individual individual, double max_dist){
+		double[] others_genes = individual.getGenotype();
+		double dist = 0.0;
+		double gene_dist = 0.0;
+		for(int k=0;k<genes.length;k++) {
+			gene_dist = (others_genes[k] - genes[k]);
+			if (gene_dist > max_dist)
+				return gene_dist;
+			dist += gene_dist * gene_dist;
+		}
+		dist = Math.sqrt(dist);
+		return dist;
+	}
+
 }

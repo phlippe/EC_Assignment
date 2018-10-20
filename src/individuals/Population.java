@@ -18,13 +18,14 @@ public class Population implements ConfigurableObject
 	private Individual maxIndividual;
 	private int population_age;
 
-	private FitnessSharingType fitnessSharingType = FitnessSharingType.STANDARD;
+	private NichingTechnique nichingTechnique = NichingTechnique.FITNESS_SHARING;
 	private boolean useFitnessSharing = false;
 	private double sigma_sharing = -1;
 	private double sigma_sharing_init = -1;
 	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
-	private double fitnessSharingBetaStep, fitnessSharingBetaOffsetSteps, fitnessSharingBetaMaxSteps;
-	private boolean fitnessSharingBetaExponential;
+	private double fitnessSharingStepSize, fitnessSharingOffsetSteps, fitnessSharingMaxSteps;
+	private boolean fitnessSharingStepsExponential;
+	private boolean fitnessSharingAdaptSigma;
 	private boolean useFitnessSharingMultiSigma = false;
 	private double[][] distance_matrix;
 	private long[] individual_ids;
@@ -45,18 +46,19 @@ public class Population implements ConfigurableObject
 	}
 
 	public void setConfigParams(ConfigParams params){
-		fitnessSharingType = params.getFitnessSharingType();
-		useFitnessSharing = params.useFitnessSharing();
+		nichingTechnique = params.getNichingTechnique();
+		useFitnessSharing = params.useNichingTechnique();
 		sigma_sharing = params.getFitnessSharingSigma();
 		sigma_sharing_init = params.getFitnessSharingSigma();
 		useFitnessSharingMultiSigma = params.useFitnessSharingMultiSigma();
 		fitnessSharingAlpha = params.getFitnessSharingAlpha();
 		fitnessSharingBeta = params.getFitnessSharingBeta();
-		fitnessSharingBetaStep = params.getFitnessSharingBetaStep();
-		fitnessSharingBetaExponential = params.isFitnessSharingBetaExponential();
-		fitnessSharingBetaOffsetSteps = params.getFitnessSharingBetaOffsetSteps();
-		fitnessSharingBetaMaxSteps = params.getFitnessSharingBetaMaxSteps();
+		fitnessSharingStepSize = params.getFitnessSharingAdaptiveStepSize();
+		fitnessSharingStepsExponential = params.isFitnessSharingStepsExponential();
+		fitnessSharingOffsetSteps = params.getFitnessSharingOffsetSteps();
+		fitnessSharingMaxSteps = params.getFitnessSharingMaxSteps();
 		fitnessSharingBetaInit = params.getFitnessSharingBeta();
+		fitnessSharingAdaptSigma = params.isFitnessSharingAdaptSigma();
 		pushToLinePower = params.getPushToLinePower();
 		pushToLineFitnessSharing = params.isPushToLineFitnessSharing();
 		pushToLineStartVal = params.getPushToLineStartVal();
@@ -137,20 +139,26 @@ public class Population implements ConfigurableObject
 	}
 
 	private void updateBeta(){
-		if(population_age > fitnessSharingBetaOffsetSteps &&
-				(fitnessSharingBetaMaxSteps == -1 || population_age <= fitnessSharingBetaMaxSteps)) {
-			if (fitnessSharingBetaExponential) {
-				// fitnessSharingBeta *= fitnessSharingBetaStep;
-				// fitnessSharingAlpha *= fitnessSharingBetaStep;
-				sigma_sharing *= fitnessSharingBetaStep;
+		if(population_age > fitnessSharingOffsetSteps &&
+				(fitnessSharingMaxSteps == -1 || population_age <= fitnessSharingMaxSteps)) {
+			if (fitnessSharingStepsExponential) {
+				if(fitnessSharingAdaptSigma) {
+					sigma_sharing *= fitnessSharingStepSize;
+				}
+				else{
+					fitnessSharingBeta *= fitnessSharingStepSize;
+				}
 			} else {
-				// fitnessSharingBeta += fitnessSharingBetaStep;
-				// fitnessSharingAlpha += fitnessSharingBetaStep;
-				sigma_sharing += fitnessSharingBetaStep;
+				if(fitnessSharingAdaptSigma) {
+					sigma_sharing += fitnessSharingStepSize;
+				}
+				else{
+					fitnessSharingBeta += fitnessSharingStepSize;
+				}
 			}
 		}
 		else{
-			if(population_age > fitnessSharingBetaMaxSteps)
+			if(population_age > fitnessSharingMaxSteps)
 				sigma_sharing = 0.0;
 		}
 	}
@@ -267,7 +275,7 @@ public class Population implements ConfigurableObject
 					if (useFitnessSharingMultiSigma) {
 						dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
 					} else {
-						dist = individual.getDistance(neighbor);
+						dist = individual.getDistance(neighbor, sigma_sharing);
 					}
 				}
 			}
@@ -292,7 +300,7 @@ public class Population implements ConfigurableObject
 				sum += calcFitnessDistance(dist, 1);
 			}
 			else {
-				dist = individual.getDistance(neighbor);
+				dist = individual.getDistance(neighbor, sigma_sharing);
 				sum += calcFitnessDistance(dist, sigma_sharing);
 			}
 		}
@@ -321,8 +329,8 @@ public class Population implements ConfigurableObject
 
 	private double calcFitnessSharing(Individual individual, double sum_dist){
 		double fitness_factor = 1.0;
-		switch(fitnessSharingType){
-			case STANDARD:
+		switch(nichingTechnique){
+			case FITNESS_SHARING:
 				if(fitnessSharingBeta == 1 || individual.getPureFitness() < 0){
 					fitness_factor = 1.0 / sum_dist;
 				}
@@ -354,7 +362,7 @@ public class Population implements ConfigurableObject
 					}
 				}
 				break;
-			case PUSH_TO_LINE_SYMMETRIC:
+			case EXPLICIT_DIVERSITY_CONTROL:
 				double my_dist2 = - sigma_sharing * (sum_dist - myIndividuals.length) / myIndividuals.length;
 				// double desired_mean_distance = 1.0 / (0.0001 * population_age + 0.2) - 1;
 				double desired_mean_distance2 = getDesiredMeanDistance();
@@ -390,10 +398,10 @@ public class Population implements ConfigurableObject
 	public double getDesiredMeanFactor() {
 		double desired_mean_distance = getDesiredMeanDistance();
 		if (desired_mean_distance > mean_distance) {
-			switch (fitnessSharingType){
+			switch (nichingTechnique){
 				case PUSH_TO_LINE:
 					return Math.pow(getDesiredMeanDistance() / mean_distance, pushToLinePower);
-				case PUSH_TO_LINE_SYMMETRIC:
+				case EXPLICIT_DIVERSITY_CONTROL:
 					return (1 - mean_distance / desired_mean_distance);
 				default:
 					return 1;
@@ -410,7 +418,7 @@ public class Population implements ConfigurableObject
 	}
 
 	public void prepareCycle(){
-		if(useFitnessSharing){
+		if(useFitnessSharing && sigma_sharing > 0.0){
 			mean_distance = getMeanDistance(getMeanPosition());
 			setFitnessFactorSharing();
 			for(int i=0;i<individual_ids.length;i++)
@@ -423,7 +431,7 @@ public class Population implements ConfigurableObject
 	}
 
 	public void interactWithNewChildren(ArrayList<Individual> children) {
-		if(useFitnessSharing) {
+		if(useFitnessSharing && sigma_sharing > 0.0) {
 			double sum_distances, fitness_factor;
 			for (Individual child : children) {
 				sum_distances = getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child, -1);
@@ -457,7 +465,7 @@ public class Population implements ConfigurableObject
 		population.set(1, i2);
 
 		ConfigParams params = new ConfigParams(1, 1, 1);
-		params.setUseFitnessSharing(true);
+		params.setUseNichingTechnique(true);
 		params.setFitnessSharingBeta(1);
 		params.setFitnessSharingAlpha(1);
 		params.setFitnessSharingSigma(4.0);
@@ -482,15 +490,15 @@ public class Population implements ConfigurableObject
 		s += "Population size: " + myIndividuals.length + "\n";
 		s += "Use Fitness Sharing: " + useFitnessSharing + "\n";
 		if(useFitnessSharing){
-			s += "Type of fitness sharing: " + fitnessSharingType + "\n";
+			s += "Type of fitness sharing: " + nichingTechnique + "\n";
 			s += "Use self-adapted multi sigmas for fitness sharing: " + useFitnessSharingMultiSigma + "\n";
 			if(!useFitnessSharingMultiSigma)
 				s += "Shared sigma: " + sigma_sharing + "\n";
 			s += "Alpha: " + fitnessSharingAlpha + "\n";
 			s += "Beta initial: " + fitnessSharingBetaInit + "\n";
-			s += "Beta offset steps: " + fitnessSharingBetaOffsetSteps + "\n";
-			s += "Beta step size: " + fitnessSharingBetaStep + " " + (fitnessSharingBetaExponential ? "(exponential)":"(linear)") + "\n";
-			s += "Beta max steps: " + fitnessSharingBetaMaxSteps + "\n";
+			s += "Beta offset steps: " + fitnessSharingOffsetSteps + "\n";
+			s += "Beta step size: " + fitnessSharingStepSize + " " + (fitnessSharingStepsExponential ? "(exponential)":"(linear)") + "\n";
+			s += "Beta max steps: " + fitnessSharingMaxSteps + "\n";
 			s += "-- Push to line --\n";
 			s += "Start value: " + pushToLineStartVal + "\n";
 			s += "End cycle: " + pushToLineEndCycle + "\n";

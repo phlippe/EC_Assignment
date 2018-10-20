@@ -4,7 +4,7 @@ import java.util.Properties;
 import org.vu.contest.ContestEvaluation;
 
 public class SphereEvaluation implements ContestEvaluation {
-	private static final int EVALS_LIMIT_ = 10000;
+	public static final int EVALS_LIMIT_ = 10000;
 	private static final double BASE_ = 11.5356D;
 	private static final double ftarget_ = 0.0D;
 	private double best_ = 0.0D;

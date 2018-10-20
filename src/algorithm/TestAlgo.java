@@ -1,23 +1,17 @@
 package algorithm;
 
 import configuration.ConfigParams;
-import configuration.Configuration;
-import configuration.ExampleConfig;
 import configuration.StandardConfig;
-import individuals.FitnessSharingType;
-import island.DistributedEvolutionaryCycle;
-import island.IslandParams;
+import individuals.NichingTechnique;
 import org.vu.contest.ContestEvaluation;
 
 import evaluation.*;
-import recombination.RecombinationType;
 import selection.SurvivorSelectionType;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -27,96 +21,50 @@ import java.util.Date;
 public class TestAlgo
 {
 
-	public static void main(String args[]){
-
-		int config_index = Integer.parseInt(args[0]);
-		double reset_prob = 0;
-
-//		ConfigParams configParams = getBestKatsuuraConfig();
-//		StandardConfig config = new StandardConfig(configParams);
-//		EvolutionaryCycle eval_ea = new EvolutionaryCycle(config);
-//		ContestEvaluation eval = createEval(EvalType.KATSUURA);
-//      swipeSeeds(eval_ea, eval, 1000);
-
-        ConfigParams configParams = new ConfigParams(100, 10, 2);
-        configParams.setParentTournamentSize(2);
-        configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-        configParams.setSurvivorTournamentSize(2);
-        configParams.setMutationMultiSigmaInit(0.01);
-        configParams.setMutationMultiSigmaFactor(0.8);
-        configParams.setUseFitnessSharing(false);
-        configParams.setUseFitnessSharingMultiSigma(false);
-        StandardConfig config = new StandardConfig(configParams);
-
-		ConfigParams configParams2 = new ConfigParams(400, 80, 2);
-		configParams2.setParentTournamentSize(2);
-		configParams2.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams2.setSurvivorTournamentSize(2);
-		configParams2.setMutationMultiSigmaInit(0.01);
-		configParams2.setMutationMultiSigmaFactor(0.8);
-		configParams2.setUseFitnessSharing(true);
-		configParams2.setUseFitnessSharingMultiSigma(false);
-		configParams2.setFitnessSharingSigma(0.03);
-		configParams2.setFitnessSharingBeta(1);
-		configParams2.setFitnessSharingAlpha(1);
-		double remaining_iterations = 6250;
-		// configParams2.setFitnessSharingBetaOffsetSteps(0.2 * remaining_iterations);
-		// configParams2.setFitnessSharingBetaStep(Math.exp(Math.log(10) / (0.8 * remaining_iterations)));
-		// configParams2.setFitnessSharingBetaExponential(true);
-//		double offstep_prop = 0.4;
-//		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-//		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.5 * offstep_prop) * remaining_iterations);
-//		configParams2.setFitnessSharingBetaStep(8.0 / ((1 - 2 * offstep_prop) * remaining_iterations));
-		configParams2.setFitnessSharingBetaOffsetSteps(2.0 * remaining_iterations);
-		configParams2.setFitnessSharingBetaMaxSteps((2 - 0.334) * remaining_iterations);
-		configParams2.setFitnessSharingBetaStep(-0.03 / (0.333 * remaining_iterations));
-//		double offstep_prop = 0.2;
-//		configParams2.setFitnessSharingBetaOffsetSteps(offstep_prop * remaining_iterations);
-//		configParams2.setFitnessSharingBetaMaxSteps((1 - 0.2 - offstep_prop) * remaining_iterations);
-//		configParams2.setFitnessSharingBetaStep(4.0 / ((0.2) * remaining_iterations));
-		configParams2.setFitnessSharingBetaExponential(false);
-		configParams2.setFitnessSharingType(FitnessSharingType.STANDARD);
-		configParams2.setPushToLineEndCycle(3000);
-		configParams2.setPushToLinePower(6);
-		configParams2.setPushToLineStartVal(4);
-		configParams2.setPushToLineFitnessSharing(false);
-		//configParams2.setRecombinationType(RecombinationType.BLEND_RANDOM_CROSSOVER);
-		//configParams2.setRecombinationBlendRandomSigma(0.1);
-		StandardConfig config2 = new StandardConfig(configParams2);
-
-		ConfigParams configParams3 = new ConfigParams(100, 10, 2);
-		configParams3.setParentTournamentSize(2);
-		configParams3.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-		configParams3.setSurvivorTournamentSize(2);
-		configParams3.setMutationMultiSigmaInit(0.01);
-		configParams3.setMutationMultiSigmaFactor(0.8);
-		configParams3.setUseFitnessSharing(true);
-		configParams3.setUseFitnessSharingMultiSigma(false);
-		configParams3.setFitnessSharingSigma(0.0001);
-		StandardConfig config3 = new StandardConfig(configParams3);
-
-		StandardConfig[] allConfigs = {config, config2, config3, config, config2, config3};
-
-        IslandParams islandParams = new IslandParams(1000, 5);
-        islandParams.setTopologyType(IslandParams.TopologyType.COMPLETE);
-        islandParams.setExchangeType(IslandParams.ExchangeType.MULTI_CULTI);
-        // DistributedEvolutionaryCycle eval_ea = new DistributedEvolutionaryCycle(allConfigs, islandParams);
-        EvolutionaryCycle eval_ea = new EvolutionaryCycle(config2);
-		Tracer tracer = new Tracer(true, "fitness_sharing_sigma_10_00_00");
-        eval_ea.addTracer(tracer);
-        ContestEvaluation eval = createEval(EvalType.KATSUURA);
-        swipeSeeds(eval_ea, eval, 100, 0);
+	enum ReportVariants{
+		EXPLICIT_DIVERSITY_CONTROL,
+		FITNESS_SHARING,
+		FITNESS_SHARING_SIGMA,
+		FITNESS_SHARING_BETA,
+		STANDARD
 	}
 
-	private static ConfigParams getBestKatsuuraConfig(){
-        ConfigParams configParams = new ConfigParams(400, 40, 2);
-        configParams.setParentTournamentSize(2);
-        configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
-        configParams.setSurvivorTournamentSize(6);
-        configParams.setMutationMultiSigmaInit(0.01);
-        configParams.setMutationMultiSigmaFactor(0.8);
-        return configParams;
-    }
+	public static void main(String args[]){
+
+		// Define algorithm you want to run. Based on this decision, the parameters will be selected
+		ReportVariants algoVariant = ReportVariants.EXPLICIT_DIVERSITY_CONTROL;
+		// Define contest function on which the algorithm should be tested
+		EvalType evalType = EvalType.KATSUURA;
+		ContestEvaluation eval = createEval(evalType);
+
+		// Create default parameter setting that is shared among all variants
+		ConfigParams configParams = new ConfigParams(400, 80, 2);
+		configParams.setParentTournamentSize(2);
+		configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+		configParams.setSurvivorTournamentSize(2);
+		configParams.setMutationMultiSigmaInit(0.01);
+		configParams.setMutationMultiSigmaFactor(0.8);
+
+		// Create algorithm specific parameters
+		if(algoVariant == ReportVariants.STANDARD){
+			// Standard algorithm does not apply any fitness sharing or other niching technique
+			configParams.setUseNichingTechnique(false);
+		}
+		else{
+			// For all other algorithms than standard, use niching technique
+			createNichingSpecificParameters(configParams, evalType, algoVariant);
+		}
+
+		// Create EA instance
+		StandardConfig config = new StandardConfig(configParams);
+        EvolutionaryCycle eval_ea = new EvolutionaryCycle(config);
+		// Tracer creates log files with information about the population, max fitness, ... (optional by the parameter "active")
+		Tracer tracer = new Tracer(false, "fitness_sharing");
+        eval_ea.addTracer(tracer);
+
+        // Execute "number_of_runs" tests with seeds from "start_seed" to "start_seed" + "number_of_runs" and print mean score
+        swipeSeeds(eval_ea, eval, 1000, 0);
+	}
 
 	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval){
 		return executeExperiment(eval_ea, eval, 1);
@@ -190,6 +138,51 @@ public class TestAlgo
         }
     }
 
+    private static void createNichingSpecificParameters(ConfigParams configParams, EvalType evalType, ReportVariants algoVariant){
+		configParams.setUseNichingTechnique(true);
+		configParams.setFitnessSharingSigma(0.03); // Define sigma share
+		configParams.setFitnessSharingBeta(1);	// Define initial beta
+		configParams.setFitnessSharingAlpha(1);	// Define alpha
+
+		// Determine how many generations will be created before running out of evaluation cycles
+		double remaining_iterations = getEvalLimit(evalType) / (configParams.getNumberRecombinations() * configParams.getParentArity());
+		switch(algoVariant){
+			case EXPLICIT_DIVERSITY_CONTROL:
+				configParams.setNichingTechnique(NichingTechnique.EXPLICIT_DIVERSITY_CONTROL);
+				configParams.setPushToLineEndCycle(3000);
+				configParams.setPushToLinePower(6);
+				configParams.setPushToLineStartVal(4);
+				break;
+			case FITNESS_SHARING:
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				configParams.setFitnessSharingOffsetSteps(remaining_iterations);
+				configParams.setFitnessSharingMaxSteps(remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(0.0);
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case FITNESS_SHARING_SIGMA:
+				configParams.setFitnessSharingAdaptSigma(true);
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				// Define curve for changing sigma
+				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
+				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(-0.03 / (0.333 * remaining_iterations));
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case FITNESS_SHARING_BETA:
+				configParams.setFitnessSharingAdaptSigma(false); // False means we adapt beta instead
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				// Define curve for changing beta
+				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
+				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(9.0 / (0.333 * remaining_iterations));
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case STANDARD:
+				break;
+		}
+	}
+
 	private static ContestEvaluation createEval(EvalType eval_func){
 		ContestEvaluation eval;
 		switch(eval_func){
@@ -212,46 +205,14 @@ public class TestAlgo
 		return eval;
 	}
 
-	private static void writeOutFunctionData() {
-		double[] best_pos = {-1.4154604737234566, -3.0429615563373047, -0.503070202106929, 2.343867130236364,
-				2.496793683159909, 0.37356189364284503, -2.1029163717550596, -4.04357034048021,
-				0.007292472085812699, -1.8254043393650436};
-		double[] mean_pos = {-1.4204561878210777, -3.0475985806287285, -0.510800536874158, 2.328720589408676,
-				2.4911761407908455, 0.38137308876024045, -2.084474354738977, -4.024820818722045,
-				-0.00727655406965648, -1.815969683542992};
-		double[] child = new double[10];
-		int number_steps = 1000;
-		ContestEvaluation eval_func = createEval(EvalType.KATSUURA);
-		for (int axis_x = 0; axis_x < mean_pos.length; axis_x++) {
-			for(int axis_y = axis_x+1; axis_y < mean_pos.length; axis_y++){
-				System.out.println("Axis x: " + axis_x + ", Axis y: "+ axis_y);
-				StringBuilder stringBuilder = new StringBuilder();
-				for (int index_x = 0; index_x < number_steps; index_x++) {
-					for (int index_y = 0; index_y < number_steps; index_y++) {
-						for (int index_gene = 0; index_gene < mean_pos.length; index_gene++) {
-							if (index_gene != axis_x && index_gene != axis_y) {
-								child[index_gene] = best_pos[index_gene];
-							} else {
-								if (index_gene == axis_x)
-									child[index_gene] = mean_pos[index_gene] + (index_x / (0.25 * number_steps) - 1) * (best_pos[index_gene] - mean_pos[index_gene]);
-								else
-									child[index_gene] = mean_pos[index_gene] + (index_y / (0.25 * number_steps) - 1) * (best_pos[index_gene] - mean_pos[index_gene]);
-							}
-						}
-						double fitness = (Double) eval_func.evaluate(child);
-						stringBuilder.append(fitness);
-						stringBuilder.append("\n");
-					}
-				}
-				new File("func_data/").mkdirs();
-				String filename = "func_data/katsuura_" + axis_x + "_" + axis_y + ".txt";
-				try (PrintWriter out = new PrintWriter(filename)) {
-					out.println(stringBuilder.toString());
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
-			}
+	private static double getEvalLimit(EvalType evalType){
+		switch(evalType){
+			case SPHERE: return SphereEvaluation.EVALS_LIMIT_;
+			case KATSUURA: return KatsuuraEvaluation.EVALS_LIMIT_;
+			case SCHAFFERS: return SchaffersEvaluation.EVALS_LIMIT_;
+			case BENT_CIGAR: return BentCigarFunction.EVALS_LIMIT_;
 		}
+		return -1;
 	}
 
 }

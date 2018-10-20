@@ -1,6 +1,6 @@
 package configuration;
 
-import individuals.FitnessSharingType;
+import individuals.NichingTechnique;
 import recombination.RecombinationType;
 import selection.ParentSelectionStochasticType;
 import selection.ParentSelectionType;
@@ -13,16 +13,17 @@ public class ConfigParams {
     private int numberRecombinations;
     private int parentArity;
 
-    private FitnessSharingType fitnessSharingType = FitnessSharingType.STANDARD;
-    private boolean useFitnessSharing = false;
+    private NichingTechnique nichingTechnique = NichingTechnique.FITNESS_SHARING;
+    private boolean useNichingTechnique = false;
     private double fitnessSharingSigma = 0.1;
     private boolean useFitnessSharingMultiSigma = false;
     private double fitnessSharingAlpha = 1;
     private double fitnessSharingBeta = 1;
-    private double fitnessSharingBetaStep = 1;
-    private double fitnessSharingBetaOffsetSteps = 0;
-    private double fitnessSharingBetaMaxSteps = -1;
-    private boolean fitnessSharingBetaExponential = true;
+    private double fitnessSharingAdaptiveStepSize = 1;
+    private double fitnessSharingOffsetSteps = 0;
+    private double fitnessSharingMaxSteps = -1;
+    private boolean fitnessSharingStepsExponential = true;
+    private boolean fitnessSharingAdaptSigma = true;
 
     private double pushToLinePower = 1.0;
     private boolean pushToLineFitnessSharing = false;
@@ -274,12 +275,12 @@ public class ConfigParams {
         this.recombinationWACAlpha = recombinationWACAlpha;
     }
 
-    public boolean useFitnessSharing() {
-        return useFitnessSharing;
+    public boolean useNichingTechnique() {
+        return useNichingTechnique;
     }
 
-    public void setUseFitnessSharing(boolean useFitnessSharing) {
-        this.useFitnessSharing = useFitnessSharing;
+    public void setUseNichingTechnique(boolean useNichingTechnique) {
+        this.useNichingTechnique = useNichingTechnique;
     }
 
     public boolean useFitnessSharingMultiSigma() {
@@ -314,46 +315,46 @@ public class ConfigParams {
         this.fitnessSharingBeta = fitnessSharingBeta;
     }
 
-    public double getFitnessSharingBetaStep() {
-        return fitnessSharingBetaStep;
+    public double getFitnessSharingAdaptiveStepSize() {
+        return fitnessSharingAdaptiveStepSize;
     }
 
-    public void setFitnessSharingBetaStep(double fitnessSharingBetaStep) {
-        this.fitnessSharingBetaStep = fitnessSharingBetaStep;
+    public void setFitnessSharingAdaptiveStepSize(double fitnessSharingAdaptiveStepSize) {
+        this.fitnessSharingAdaptiveStepSize = fitnessSharingAdaptiveStepSize;
     }
 
-    public boolean isFitnessSharingBetaExponential() {
-        return fitnessSharingBetaExponential;
+    public boolean isFitnessSharingStepsExponential() {
+        return fitnessSharingStepsExponential;
     }
 
-    public void setFitnessSharingBetaExponential(boolean fitnessSharingBetaExponential) {
-        this.fitnessSharingBetaExponential = fitnessSharingBetaExponential;
+    public void setFitnessSharingStepsExponential(boolean fitnessSharingStepsExponential) {
+        this.fitnessSharingStepsExponential = fitnessSharingStepsExponential;
     }
 
-    public double getFitnessSharingBetaOffsetSteps() {
-        return fitnessSharingBetaOffsetSteps;
+    public double getFitnessSharingOffsetSteps() {
+        return fitnessSharingOffsetSteps;
     }
 
-    public void setFitnessSharingBetaOffsetSteps(double fitnessSharingBetaOffsetSteps) {
-        this.fitnessSharingBetaOffsetSteps = fitnessSharingBetaOffsetSteps;
+    public void setFitnessSharingOffsetSteps(double fitnessSharingOffsetSteps) {
+        this.fitnessSharingOffsetSteps = fitnessSharingOffsetSteps;
     }
 
-    public double getFitnessSharingBetaMaxSteps() {
-        return fitnessSharingBetaMaxSteps;
+    public double getFitnessSharingMaxSteps() {
+        return fitnessSharingMaxSteps;
     }
 
-    public void setFitnessSharingBetaMaxSteps(double fitnessSharingBetaMaxSteps) {
-        this.fitnessSharingBetaMaxSteps = fitnessSharingBetaMaxSteps;
+    public void setFitnessSharingMaxSteps(double fitnessSharingMaxSteps) {
+        this.fitnessSharingMaxSteps = fitnessSharingMaxSteps;
     }
 
-    public FitnessSharingType getFitnessSharingType()
+    public NichingTechnique getNichingTechnique()
     {
-        return fitnessSharingType;
+        return nichingTechnique;
     }
 
-    public void setFitnessSharingType(FitnessSharingType fitnessSharingType)
+    public void setNichingTechnique(NichingTechnique nichingTechnique)
     {
-        this.fitnessSharingType = fitnessSharingType;
+        this.nichingTechnique = nichingTechnique;
     }
 
     public double getPushToLinePower() {
@@ -386,5 +387,13 @@ public class ConfigParams {
 
     public void setPushToLineEndCycle(double pushToLineEndCycle) {
         this.pushToLineEndCycle = pushToLineEndCycle;
+    }
+
+    public boolean isFitnessSharingAdaptSigma() {
+        return fitnessSharingAdaptSigma;
+    }
+
+    public void setFitnessSharingAdaptSigma(boolean fitnessSharingAdaptSigma) {
+        this.fitnessSharingAdaptSigma = fitnessSharingAdaptSigma;
     }
 }

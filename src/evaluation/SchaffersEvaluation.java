@@ -6,7 +6,7 @@ import javabbob.JNIfgeneric.Params;
 import org.vu.contest.ContestEvaluation;
 
 public class SchaffersEvaluation implements ContestEvaluation {
-	private static final int EVALS_LIMIT_ = 100000;
+	public static final int EVALS_LIMIT_ = 100000;
 	private static final int bbobid_ = 17;
 	private static final double BASE_ = -13.35288D;
 	private JNIfgeneric function_ = null;

@@ -6,7 +6,7 @@ import javabbob.JNIfgeneric.Params;
 import org.vu.contest.ContestEvaluation;
 
 public class BentCigarFunction implements ContestEvaluation {
-	private static final int EVALS_LIMIT_ = 10000;
+	public static final int EVALS_LIMIT_ = 10000;
 	private static final int bbobid_ = 12;
 	private static final double BASE_ = 9273454.0D;
 	private JNIfgeneric function_ = null;

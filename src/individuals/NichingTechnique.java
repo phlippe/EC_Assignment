@@ -3,13 +3,13 @@ package individuals;
 /**
  * Created by phlippe on 04.10.18.
  */
-public enum FitnessSharingType
+public enum NichingTechnique
 {
 
-	STANDARD,
+	FITNESS_SHARING,
 	RELATIVE,
 	LOG_SCALE,
 	SQRT,
 	PUSH_TO_LINE,
-	PUSH_TO_LINE_SYMMETRIC;
+	EXPLICIT_DIVERSITY_CONTROL;
 }
