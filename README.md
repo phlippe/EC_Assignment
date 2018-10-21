@@ -98,3 +98,6 @@ Finally, we define how many experiments we want to execute. By default, 1000 exp
 ```
 
 If you want to execute less experiments, change ``1000`` to your desired number. Note, that this will reduce the runtime but also reduce the accuracy/significance of your experiments.
+
+## Questions
+For questions, please contact phillip.lippe@googlemail.com
