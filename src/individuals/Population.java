@@ -284,7 +284,7 @@ public class Population implements ConfigurableObject
 					if (useFitnessSharingMultiSigma) {
 						dist = individual.getDistance(neighbor, individual.getAdditionalParams(GeneTypes.MULTI_SIGMA));
 					} else {
-						dist = individual.getDistance(neighbor, sigma_sharing);
+						dist = individual.getDistance(neighbor);
 					}
 				}
 			}
@@ -309,7 +309,7 @@ public class Population implements ConfigurableObject
 				sum += calcFitnessDistance(dist, 1);
 			}
 			else {
-				dist = individual.getDistance(neighbor, sigma_sharing);
+				dist = individual.getDistance(neighbor);
 				sum += calcFitnessDistance(dist, sigma_sharing);
 			}
 		}

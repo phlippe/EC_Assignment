@@ -32,7 +32,7 @@ public class TestAlgo
 	public static void main(String args[]){
 
 		// Define algorithm you want to run. Based on this decision, the parameters will be selected
-		ReportVariants algoVariant = ReportVariants.EXPLICIT_DIVERSITY_CONTROL;
+		ReportVariants algoVariant = ReportVariants.STANDARD;
 		// Define contest function on which the algorithm should be tested
 		EvalType evalType = EvalType.KATSUURA;
 		ContestEvaluation eval = createEval(evalType);
