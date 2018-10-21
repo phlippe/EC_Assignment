@@ -19,7 +19,7 @@ public class Population implements ConfigurableObject
 	private int population_age;
 
 	private NichingTechnique nichingTechnique = NichingTechnique.FITNESS_SHARING;
-	private boolean useFitnessSharing = false;
+	private boolean useNichingTechnique = false;
 	private double sigma_sharing = -1;
 	private double sigma_sharing_init = -1;
 	private double fitnessSharingAlpha, fitnessSharingBeta, fitnessSharingBetaInit;
@@ -49,7 +49,7 @@ public class Population implements ConfigurableObject
 
 	public void setConfigParams(ConfigParams params){
 		nichingTechnique = params.getNichingTechnique();
-		useFitnessSharing = params.useNichingTechnique();
+		useNichingTechnique = params.useNichingTechnique();
 		sigma_sharing = params.getFitnessSharingSigma();
 		sigma_sharing_init = params.getFitnessSharingSigma();
 		useFitnessSharingMultiSigma = params.useFitnessSharingMultiSigma();
@@ -431,8 +431,9 @@ public class Population implements ConfigurableObject
 	}
 
 	public void prepareCycle(){
-		if(useFitnessSharing && sigma_sharing > 0.0) {
-            mean_distance = getMeanDistance(getMeanPosition());
+		if(useNichingTechnique &&
+				(nichingTechnique == NichingTechnique.EXPLICIT_DIVERSITY_CONTROL || sigma_sharing > 0.0)) {
+            mean_position = getMeanPosition();
             mean_distance = getMeanDistance(mean_position);
             if(nichingTechnique != NichingTechnique.EXPLICIT_DIVERSITY_CONTROL || mean_distance < getDesiredMeanDistance()) {
                 setFitnessFactorSharing();
@@ -447,7 +448,8 @@ public class Population implements ConfigurableObject
 	}
 
 	public void interactWithNewChildren(ArrayList<Individual> children) {
-		if(useFitnessSharing && sigma_sharing > 0.0) {
+		if(useNichingTechnique &&
+				(nichingTechnique == NichingTechnique.EXPLICIT_DIVERSITY_CONTROL || sigma_sharing > 0.0)) {
 			double sum_distances, fitness_factor;
 			for (Individual child : children) {
 				sum_distances = getDistanceSumForIndividual(children, child) + getDistanceSumForIndividual(child, -1);
@@ -504,8 +506,8 @@ public class Population implements ConfigurableObject
 	public String getDescription() {
 		String s = "";
 		s += "Population size: " + myIndividuals.length + "\n";
-		s += "Use Fitness Sharing: " + useFitnessSharing + "\n";
-		if(useFitnessSharing){
+		s += "Use Fitness Sharing: " + useNichingTechnique + "\n";
+		if(useNichingTechnique){
 			s += "Type of fitness sharing: " + nichingTechnique + "\n";
 			s += "Use self-adapted multi sigmas for fitness sharing: " + useFitnessSharingMultiSigma + "\n";
 			if(!useFitnessSharingMultiSigma)

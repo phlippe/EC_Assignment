@@ -5,16 +5,14 @@ import configuration.ConfigParams;
 import configuration.Configuration;
 import configuration.StandardConfig;
 import evaluation.EvalType;
-import individuals.GeneTypes;
-import individuals.GenoRepresentation;
-import individuals.Individual;
-import individuals.Population;
+import individuals.*;
 import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 import mutation.Mutation;
 import org.vu.contest.ContestEvaluation;
 import recombination.Recombination;
 import selection.ParentSelection;
 import selection.SurvivorSelection;
+import selection.SurvivorSelectionType;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -191,7 +189,15 @@ public class EAOnEA implements EvolutionaryAlgorithm {
 
         @Override
         public void run() {
-            ConfigParams configParams = TestAlgo.getDefaultConfig();
+            ConfigParams configParams = new ConfigParams(400, 80, 2);
+            configParams.setParentTournamentSize(2);
+            configParams.setSurvivorSelectionType(SurvivorSelectionType.ROUND_ROBIN_TOURNAMENT);
+            configParams.setSurvivorTournamentSize(2);
+            configParams.setMutationMultiSigmaInit(0.01);
+            configParams.setMutationMultiSigmaFactor(0.8);
+            configParams.setUseNichingTechnique(true);
+            configParams.setNichingTechnique(NichingTechnique.EXPLICIT_DIVERSITY_CONTROL);
+
             configParams.setPushToLineStartVal(individual.getAdditionalParams(GeneTypes.BETA)[0]);
             configParams.setPushToLineEndCycle(individual.getAdditionalParams(GeneTypes.ALPHA)[0]);
             configParams.setPushToLineGradientFactor(Math.pow(10, individual.getAdditionalParams(GeneTypes.GAMMA)[0]));

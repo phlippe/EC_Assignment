@@ -63,13 +63,60 @@ public class TestAlgo
         eval_ea.addTracer(tracer);
 
         // Execute "number_of_runs" tests with seeds from "start_seed" to "start_seed" + "number_of_runs" and print mean score
-        swipeSeeds(eval_ea, eval, 1000, 0);
+        swipeSeeds(eval_ea, eval, 1000, 0, true);
+	}
+
+	private static void createNichingSpecificParameters(ConfigParams configParams, EvalType evalType, ReportVariants algoVariant){
+		configParams.setUseNichingTechnique(true);
+		configParams.setFitnessSharingSigma(0.03); // Define sigma share
+		configParams.setFitnessSharingBeta(1);	// Define initial beta
+		configParams.setFitnessSharingAlpha(1);	// Define alpha
+
+		// Determine how many generations will be created before running out of evaluation cycles
+		double remaining_iterations = getEvalLimit(evalType) / (configParams.getNumberRecombinations() * configParams.getParentArity());
+		switch(algoVariant){
+			case EXPLICIT_DIVERSITY_CONTROL:
+				configParams.setNichingTechnique(NichingTechnique.EXPLICIT_DIVERSITY_CONTROL);
+				configParams.setPushToLineEndCycle(3000);
+				configParams.setPushToLinePower(1);
+				configParams.setPushToLineStartVal(4);
+				configParams.setPushToLineGradientFactor(1);
+				break;
+			case FITNESS_SHARING:
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				configParams.setFitnessSharingOffsetSteps(remaining_iterations);
+				configParams.setFitnessSharingMaxSteps(remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(0.0);
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case FITNESS_SHARING_SIGMA:
+				configParams.setFitnessSharingAdaptSigma(true);
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				// Define curve for changing sigma
+				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
+				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(-0.03 / (0.333 * remaining_iterations));
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case FITNESS_SHARING_BETA:
+				configParams.setFitnessSharingAdaptSigma(false); // False means we adapt beta instead
+				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
+				// Define curve for changing beta
+				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
+				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
+				configParams.setFitnessSharingAdaptiveStepSize(9.0 / (0.333 * remaining_iterations));
+				configParams.setFitnessSharingStepsExponential(false);
+				break;
+			case STANDARD:
+				break;
+		}
 	}
 
 	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval){
 		return executeExperiment(eval_ea, eval, 1);
 	}
 
+	// Run a single experiment based on this EA, evaluation function and seed
 	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, long seed){
 		TheOptimizers a = new TheOptimizers();
 		a.setSeed(seed);
@@ -80,11 +127,12 @@ public class TestAlgo
 		return a.getBestScore();
 	}
 
-	private static void swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs){
-		swipeSeeds(eval_ea, eval, number_of_runs, 0);
+	// Run multiple experiments with different seeds
+	public static double swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs){
+		return swipeSeeds(eval_ea, eval, number_of_runs, 0, true);
 	}
 
-	private static void swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs, int start_seed){
+	public static double swipeSeeds(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, int number_of_runs, int start_seed, boolean writeLog){
 	    double best_score = 0.0;
 	    double mean_score = 0.0;
 	    double worst_score = Double.MAX_VALUE;
@@ -125,65 +173,21 @@ public class TestAlgo
         mean_score /= number_of_runs;
 	    summary += "==============================\nBest score: " + best_score + "\nWorst score: " + worst_score + "\nMean score: " + mean_score;
         summary += "\n\n" + eval_ea.getLogString() + "\n\n";
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        Date date = new Date();
-        new File("logs/").mkdirs();
-        String filename = "logs/swipe_" + (eval_ea.getName().length() == 0 ? "" : eval_ea.getName() + "_") + dateFormat.format(date) + ".txt";
-        try (PrintWriter out = new PrintWriter(filename)) {
-            out.println(summary);
+        if(writeLog) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            Date date = new Date();
+            new File("logs/").mkdirs();
+            String filename = "logs/swipe_" + (eval_ea.getName().length() == 0 ? "" : eval_ea.getName() + "_") + dateFormat.format(date) + ".txt";
+            try (PrintWriter out = new PrintWriter(filename)) {
+                out.println(summary);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        return mean_score;
     }
 
-    private static void createNichingSpecificParameters(ConfigParams configParams, EvalType evalType, ReportVariants algoVariant){
-		configParams.setUseNichingTechnique(true);
-		configParams.setFitnessSharingSigma(0.03); // Define sigma share
-		configParams.setFitnessSharingBeta(1);	// Define initial beta
-		configParams.setFitnessSharingAlpha(1);	// Define alpha
-
-		// Determine how many generations will be created before running out of evaluation cycles
-		double remaining_iterations = getEvalLimit(evalType) / (configParams.getNumberRecombinations() * configParams.getParentArity());
-		switch(algoVariant){
-			case EXPLICIT_DIVERSITY_CONTROL:
-				configParams.setNichingTechnique(NichingTechnique.EXPLICIT_DIVERSITY_CONTROL);
-				configParams.setPushToLineEndCycle(3000);
-				configParams.setPushToLinePower(6);
-				configParams.setPushToLineStartVal(4);
-				break;
-			case FITNESS_SHARING:
-				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
-				configParams.setFitnessSharingOffsetSteps(remaining_iterations);
-				configParams.setFitnessSharingMaxSteps(remaining_iterations);
-				configParams.setFitnessSharingAdaptiveStepSize(0.0);
-				configParams.setFitnessSharingStepsExponential(false);
-				break;
-			case FITNESS_SHARING_SIGMA:
-				configParams.setFitnessSharingAdaptSigma(true);
-				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
-				// Define curve for changing sigma
-				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
-				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
-				configParams.setFitnessSharingAdaptiveStepSize(-0.03 / (0.333 * remaining_iterations));
-				configParams.setFitnessSharingStepsExponential(false);
-				break;
-			case FITNESS_SHARING_BETA:
-				configParams.setFitnessSharingAdaptSigma(false); // False means we adapt beta instead
-				configParams.setNichingTechnique(NichingTechnique.FITNESS_SHARING);
-				// Define curve for changing beta
-				configParams.setFitnessSharingOffsetSteps(0.333 * remaining_iterations);
-				configParams.setFitnessSharingMaxSteps((1 - 0.334) * remaining_iterations);
-				configParams.setFitnessSharingAdaptiveStepSize(9.0 / (0.333 * remaining_iterations));
-				configParams.setFitnessSharingStepsExponential(false);
-				break;
-			case STANDARD:
-				break;
-		}
-	}
-
-	private static ContestEvaluation createEval(EvalType eval_func){
+	public static ContestEvaluation createEval(EvalType eval_func){
 		ContestEvaluation eval;
 		switch(eval_func){
 			case SPHERE:
