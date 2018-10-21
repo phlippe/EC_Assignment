@@ -29,6 +29,7 @@ public class ConfigParams {
     private boolean pushToLineFitnessSharing = false;
     private double pushToLineStartVal = 4.0;
     private double pushToLineEndCycle = 8000;
+    private double pushToLineGradientFactor = 1.0;
 
     private ParentSelectionType parentSelectionType = ParentSelectionType.TOURNAMENT_SELECTION;
     private ParentSelectionStochasticType parentSelectionStochasticType = ParentSelectionStochasticType.UNIVERSAL;
@@ -395,5 +396,13 @@ public class ConfigParams {
 
     public void setFitnessSharingAdaptSigma(boolean fitnessSharingAdaptSigma) {
         this.fitnessSharingAdaptSigma = fitnessSharingAdaptSigma;
+    }
+
+    public double getPushToLineGradientFactor() {
+        return pushToLineGradientFactor;
+    }
+
+    public void setPushToLineGradientFactor(double pushToLineGradientFactor) {
+        this.pushToLineGradientFactor = pushToLineGradientFactor;
     }
 }
