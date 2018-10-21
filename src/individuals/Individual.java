@@ -1,6 +1,6 @@
 package individuals;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import initialization.GenoInitializer;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class Individual
 
 	public double[] getAdditionalParams(int index){
 		if(index >= add_params.size() || index < 0){
-			TheOptimizers.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
+			player59.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
 			//System.exit(1);
 		}
 		return add_params.get(index);
@@ -90,18 +90,18 @@ public class Individual
 	public double[] getAdditionalParams(GeneTypes type){
 		int index = myRepr.getParamPosition(type);
 		if(index < 0){
-			TheOptimizers.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
-			TheOptimizers.print("Implemented in current initialization: ");
+			player59.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
+			player59.print("Implemented in current initialization: ");
 			if(myRepr.gene_types.length == 0){
-				TheOptimizers.print("---");
+				player59.print("---");
 			}
 			else{
 				for (GeneTypes implType : myRepr.gene_types)
 				{
-					TheOptimizers.print(implType.name() + ", ");
+					player59.print(implType.name() + ", ");
 				}
 			}
-			TheOptimizers.println("");
+			player59.println("");
 		}
 		return getAdditionalParams(index);
 	}

@@ -1,6 +1,6 @@
 package mutation;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import individuals.Individual;
 import selection.ParentSelectionStochastic;
 
@@ -34,7 +34,7 @@ public class CombinedMutation extends Mutation {
 
     @Override
     void applyMutation(double[] genes, Individual individual) {
-        int mut_index = ParentSelectionStochastic.searchIndexOfRange(probs, TheOptimizers.rnd_.nextDouble());
+        int mut_index = ParentSelectionStochastic.searchIndexOfRange(probs, player59.rnd_.nextDouble());
         mutations[mut_index].applyMutation(genes, individual);
     }
 

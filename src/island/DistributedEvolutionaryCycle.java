@@ -136,7 +136,7 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
                     for(int no_ind=0;no_ind<myParams.getNoIndividualExchange();no_ind++){
                         int rnd_ind;
                         do{
-                            rnd_ind = TheOptimizers.rnd_.nextInt(island_pop.size());
+                            rnd_ind = player59.rnd_.nextInt(island_pop.size());
                         }while(isInArray(rnd_ind, individual_index[island_index]));
                         individual_index[island_index][no_ind] = rnd_ind;
                     }
@@ -185,28 +185,28 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
     }
 
     private void printArray(double[][] a, String name){
-        TheOptimizers.println(name);
+        player59.println(name);
         for(int i=0;i<a.length;i++){
-            TheOptimizers.print("[");
+            player59.print("[");
             for(int j=0;j<a[i].length;j++){
                 if(j > 0)
-                    TheOptimizers.print(", ");
-                TheOptimizers.print(a[i][j]);
+                    player59.print(", ");
+                player59.print(a[i][j]);
             }
-            TheOptimizers.println("]");
+            player59.println("]");
         }
     }
 
     private void printArray(int[][] a, String name){
-        TheOptimizers.println(name);
+        player59.println(name);
         for(int i=0;i<a.length;i++){
-            TheOptimizers.print("[");
+            player59.print("[");
             for(int j=0;j<a[i].length;j++){
                 if(j > 0)
-                    TheOptimizers.print(", ");
-                TheOptimizers.print(a[i][j]);
+                    player59.print(", ");
+                player59.print(a[i][j]);
             }
-            TheOptimizers.println("]");
+            player59.println("]");
         }
     }
 
@@ -290,8 +290,8 @@ public class DistributedEvolutionaryCycle implements EvolutionaryAlgorithm{
             out.println(getLogString());
         }
         catch (Exception e){
-            TheOptimizers.println("Could not write results to file. Error message:");
-            TheOptimizers.println(e.getMessage());
+            player59.println("Could not write results to file. Error message:");
+            player59.println(e.getMessage());
         }
     }
 

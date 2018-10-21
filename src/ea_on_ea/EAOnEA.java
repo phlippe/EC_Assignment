@@ -6,7 +6,6 @@ import configuration.Configuration;
 import configuration.StandardConfig;
 import evaluation.EvalType;
 import individuals.*;
-import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 import mutation.Mutation;
 import org.vu.contest.ContestEvaluation;
 import recombination.Recombination;
@@ -14,7 +13,6 @@ import selection.ParentSelection;
 import selection.SurvivorSelection;
 import selection.SurvivorSelectionType;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class EAOnEA implements EvolutionaryAlgorithm {
@@ -153,7 +151,7 @@ public class EAOnEA implements EvolutionaryAlgorithm {
     }
 
     public static void main(String args[]){
-        TheOptimizers opt = new TheOptimizers();
+        player59 opt = new player59();
         opt.setSeed(0);
         EAOnEA myEA = new EAOnEA();
         myEA.initialize();

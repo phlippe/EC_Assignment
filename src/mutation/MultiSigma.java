@@ -1,6 +1,6 @@
 package mutation;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import individuals.GeneTypes;
 import individuals.Individual;
 
@@ -17,7 +17,7 @@ public class MultiSigma extends Mutation {
         double [] addparam = individual.getAdditionalParams(GeneTypes.MULTI_SIGMA);
         for (int i = 0; i < genes.length; i++)
         {
-                double change = TheOptimizers.rnd_.nextGaussian() * addparam[i];
+                double change = player59.rnd_.nextGaussian() * addparam[i];
                 genes[i] += change;
 
         }

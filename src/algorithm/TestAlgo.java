@@ -118,7 +118,7 @@ public class TestAlgo
 
 	// Run a single experiment based on this EA, evaluation function and seed
 	private static double executeExperiment(EvolutionaryAlgorithm eval_ea, ContestEvaluation eval, long seed){
-		TheOptimizers a = new TheOptimizers();
+		player59 a = new player59();
 		a.setSeed(seed);
 		a.setEvaluation(eval);
 		if(eval_ea != null)

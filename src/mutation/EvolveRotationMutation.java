@@ -1,6 +1,6 @@
 package mutation;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
 import individuals.Individual;
@@ -53,7 +53,7 @@ public class EvolveRotationMutation extends Mutation
 		double[][] rnd_vec = new double[genes.length][1];
 		System.out.print("Random vector: [");
 		for(int i=0;i<genes.length;i++){
-			rnd_vec[i][0] = TheOptimizers.rnd_.nextGaussian() * multi_sigmas[i];
+			rnd_vec[i][0] = player59.rnd_.nextGaussian() * multi_sigmas[i];
 			System.out.print(rnd_vec[i][0]+", ");
 		}
 		System.out.println("]");
@@ -152,7 +152,7 @@ public class EvolveRotationMutation extends Mutation
 	}
 
 	public static void main(String args[]){
-		TheOptimizers player = new TheOptimizers();
+		player59 player = new player59();
 		player.setSeed(1);
 
 		EvolveRotationMutation ev = new EvolveRotationMutation();

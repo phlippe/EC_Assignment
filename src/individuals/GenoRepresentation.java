@@ -1,6 +1,6 @@
 package individuals;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import configuration.ConfigurableObject;
 
 /**
@@ -17,13 +17,13 @@ public abstract class GenoRepresentation implements ConfigurableObject
 		this.number_additional_params = number_additional_params;
 		this.gene_types = gene_types;
 		if(gene_types.length != number_additional_params.length){
-			TheOptimizers.println("ERROR (class individuals.GenoRepresentation): number of gene types must be equal to number of additional params");
+			player59.println("ERROR (class individuals.GenoRepresentation): number of gene types must be equal to number of additional params");
 			System.exit(1);
 		}
 		for(int i=0;i<gene_types.length;i++){
 			for(int j=0;j<i-1;j++){
 				if(gene_types[i] == gene_types[j]){
-					TheOptimizers.println("ERROR (class individuals.GenoRepresentation): gene types must be unique. Please define a new type is necessary");
+					player59.println("ERROR (class individuals.GenoRepresentation): gene types must be unique. Please define a new type is necessary");
 					System.exit(1);
 				}
 			}

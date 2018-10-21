@@ -1,6 +1,6 @@
 package mutation;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import individuals.GeneTypes;
 import individuals.Individual;
 
@@ -36,7 +36,7 @@ public class ResetMutation extends Mutation {
             for(int i=0;i<genes.length;i++) genes[i] = init_val;
         }
         else{
-            double rnd_val = TheOptimizers.rnd_.nextDouble() * (upp_fac - low_fac) + low_fac;
+            double rnd_val = player59.rnd_.nextDouble() * (upp_fac - low_fac) + low_fac;
             if(exponential)
                 rnd_val = Math.exp(rnd_val);
             for(int i=0;i<genes.length;i++){

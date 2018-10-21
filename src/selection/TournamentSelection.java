@@ -1,16 +1,8 @@
 package selection;
 
-import algorithm.TheOptimizers;
-import evaluation.BentCigarFunction;
-import individuals.BoundRepresentation;
-import individuals.GeneTypes;
+import algorithm.player59;
 import individuals.Individual;
 import individuals.Population;
-import initialization.RandomGenoInitializer;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Random;
 
 public class TournamentSelection extends ParentSelection {
 
@@ -38,7 +30,7 @@ public class TournamentSelection extends ParentSelection {
                 for (int i = 0; i < k; i++) {
                     do {
                         found_new_number = true;
-                        selectedNum = TheOptimizers.rnd_.nextInt(population.size());
+                        selectedNum = player59.rnd_.nextInt(population.size());
                         for (int l = 0; l < i; l++) {
                             found_new_number = found_new_number && (tournament_indices[l] != selectedNum);
                         }

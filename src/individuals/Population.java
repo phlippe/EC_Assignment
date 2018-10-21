@@ -1,6 +1,6 @@
 package individuals;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import configuration.ConfigParams;
 import configuration.ConfigurableObject;
 import initialization.GenoInitializer;
@@ -70,11 +70,11 @@ public class Population implements ConfigurableObject
 
 	public Individual get(int index){
 		if(index < 0){
-			TheOptimizers.println("ERROR: Index smaller than 0 ("+index+").");
+			player59.println("ERROR: Index smaller than 0 ("+index+").");
 			return null;
 		}
 		if(index >= myIndividuals.length){
-			TheOptimizers.println("ERROR: Index greater than array size of "+myIndividuals.length+" ("+index+").");
+			player59.println("ERROR: Index greater than array size of "+myIndividuals.length+" ("+index+").");
 			return null;
 		}
 		return myIndividuals[index];
@@ -85,7 +85,7 @@ public class Population implements ConfigurableObject
 		if(individual.getPureFitness() > maxFitness){
 			maxFitness = individual.getPureFitness();
 			maxIndividual = individual;
-			TheOptimizers.println("Found new max fitness: "+individual.getPureFitness());
+			player59.println("Found new max fitness: "+individual.getPureFitness());
 		}
 	}
 
@@ -113,7 +113,7 @@ public class Population implements ConfigurableObject
 	}
 
 	public void reevaluateMaxFitness(){
-		TheOptimizers.println("Reevaluating max fitness (before: "+maxFitness+")");
+		player59.println("Reevaluating max fitness (before: "+maxFitness+")");
 		maxFitness = -1;
 		maxIndividual = null;
 		for(int i=0;i<myIndividuals.length;i++){
@@ -122,7 +122,7 @@ public class Population implements ConfigurableObject
 				maxIndividual = myIndividuals[i];
 			}
 		}
-		TheOptimizers.println("New max fitness: "+maxFitness);
+		player59.println("New max fitness: "+maxFitness);
 	}
 
 	public double getMaxFitness(){

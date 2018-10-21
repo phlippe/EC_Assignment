@@ -1,6 +1,6 @@
 package recombination;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public class BlendRandomRecombination extends Recombination
         for(int index_gene=0;index_gene<number_param_genes;index_gene++){
             // RANDOM RECOMBINATION
             for(index_parent=parent_genes.size()-1;index_parent>=0;index_parent--){
-                rand_pos = TheOptimizers.rnd_.nextInt(index_parent+1);
+                rand_pos = player59.rnd_.nextInt(index_parent+1);
                 for(rem_index=0;rem_index<parent_genes.size();rem_index++){
                     if(child_genes[rem_index][index_gene] == Double.MAX_VALUE)
                         rand_pos--;
@@ -37,7 +37,7 @@ public class BlendRandomRecombination extends Recombination
                         dist_sum += child_genes[index_other_children][index_gene];
                 }
                 dist_sum /= parent_genes.size() - 1;
-                child_genes[index_child][index_gene] += (child_genes[index_child][index_gene] - dist_sum) * TheOptimizers.rnd_.nextGaussian() * sigma;
+                child_genes[index_child][index_gene] += (child_genes[index_child][index_gene] - dist_sum) * player59.rnd_.nextGaussian() * sigma;
             }
         }
     }
@@ -52,7 +52,7 @@ public class BlendRandomRecombination extends Recombination
     }
 
     public static void main(String args[]){
-        TheOptimizers opt = new TheOptimizers();
+        player59 opt = new player59();
         opt.setSeed(1);
         double[] p1 = {1.0, 0.6, 0.0, 1.8};
         double[] p2 = {-1.0, 0.8, 0.0, 2.0};
@@ -67,14 +67,14 @@ public class BlendRandomRecombination extends Recombination
         BlendRandomRecombination rec = new BlendRandomRecombination(0.1);
         rec.applyRecombination(par_genes, child_genes, p1.length);
 
-        TheOptimizers.println("Child genes: ");
+        player59.println("Child genes: ");
         for(int i=0;i<child_genes.length;i++){
-            TheOptimizers.print("[");
+            player59.print("[");
             for(int j=0;j<child_genes[i].length;j++){
-                if(j > 0) TheOptimizers.print(", ");
-                TheOptimizers.print(child_genes[i][j]);
+                if(j > 0) player59.print(", ");
+                player59.print(child_genes[i][j]);
             }
-            TheOptimizers.println("]");
+            player59.println("]");
         }
     }
 }

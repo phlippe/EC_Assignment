@@ -1,25 +1,17 @@
 package algorithm;
 
-import configuration.ConfigParams;
 import configuration.Configuration;
-import individuals.GeneTypes;
 import individuals.GenoRepresentation;
 import individuals.Individual;
 import individuals.Population;
-import initialization.RandomGenoInitializer;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import mutation.GaussianMutation;
 import mutation.Mutation;
 import selection.ParentSelection;
-import recombination.RandomRecombination;
 import recombination.Recombination;
 import selection.SurvivorSelection;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,9 +49,9 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 	public void initialize(){
 		population.initialize(genoRepresentation, myConfig.getGenoInitializer(), myConfig.getAddParamsInitializer());
 		for(int i=0;i<population.size();i++){
-			if(TheOptimizers.evaluation_ != null)
+			if(player59.evaluation_ != null)
 			{
-				double fitness = (double) TheOptimizers.evaluation_.evaluate(population.get(i).getPhenotype());
+				double fitness = (double) player59.evaluation_.evaluate(population.get(i).getPhenotype());
 				population.get(i).setFitness(fitness);
 			}
 			else{
@@ -105,7 +97,7 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 		}
 		// 4. Fitness evaluation
 		for(Individual child:children){
-			double fitness = (double) TheOptimizers.evaluation_.evaluate(child.getPhenotype());
+			double fitness = (double) player59.evaluation_.evaluate(child.getPhenotype());
 			child.setFitness(fitness);
 		}
 		population.interactWithNewChildren(children);
@@ -207,17 +199,17 @@ public class EvolutionaryCycle implements EvolutionaryAlgorithm
 			out.println(getLogString());
 		}
 		catch (Exception e){
-			TheOptimizers.println("Could not write results to file. Error message:");
-			TheOptimizers.println(e.getMessage());
+			player59.println("Could not write results to file. Error message:");
+			player59.println(e.getMessage());
 		}
 	}
 
 	@Override
     public String getLogString(){
 	    String s = "";
-        s += ("Evaluation class: " + TheOptimizers.evaluation_.getClass().getName()) + "\n";
+        s += ("Evaluation class: " + player59.evaluation_.getClass().getName()) + "\n";
         s += ("Evolution cycles: " + number_cycles) + "\n";
-        s += ("Seed (randomness): " + TheOptimizers.rnd_seed) + "\n";
+        s += ("Seed (randomness): " + player59.rnd_seed) + "\n";
         s += ("Best fitness: " + getBestFitness()) + "\n";
         s += ("Best solution: ") + "\n";
         double[] best_solution = getBestSolution();

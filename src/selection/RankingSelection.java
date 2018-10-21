@@ -1,12 +1,7 @@
 package selection;
 
-import algorithm.TheOptimizers;
-import evaluation.BentCigarFunction;
-import individuals.BoundRepresentation;
-import individuals.GeneTypes;
 import individuals.Individual;
 import individuals.Population;
-import initialization.RandomGenoInitializer;
 
 import java.util.ArrayList;
 import java.util.Comparator;

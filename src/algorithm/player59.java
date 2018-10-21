@@ -8,7 +8,7 @@ import org.vu.contest.ContestEvaluation;
 import java.util.Random;
 import java.util.Properties;
 
-public class TheOptimizers
+public class player59
         implements ContestSubmission {
     public static Random rnd_;
     public static long rnd_seed;
@@ -18,7 +18,7 @@ public class TheOptimizers
     private EvolutionaryAlgorithm eval_cycle;
     private static final boolean SILENT_RUN = true;
 
-    public TheOptimizers() {
+    public player59() {
         rnd_ = new Random();
     }
 
@@ -26,11 +26,11 @@ public class TheOptimizers
         // Set seed of algorithms random process
         rnd_.setSeed(seed);
         rnd_seed = seed;
-        TheOptimizers.println("Seed: " + seed);
+        player59.println("Seed: " + seed);
     }
 
     public void setEvaluation(ContestEvaluation evaluation) {
-        TheOptimizers.println("Set evaluation " + evaluation);
+        player59.println("Set evaluation " + evaluation);
         // Set evaluation problem used in the run
         evaluation_ = evaluation;
 
@@ -75,20 +75,20 @@ public class TheOptimizers
         eval_cycle.initialize();
         // init population
         // calculate fitness
-        TheOptimizers.println("Run");
+        player59.println("Run");
         while (evals < evaluations_limit_) {
             eval_cycle.run_single_cycle();
             evals += eval_cycle.getEvalsPerCycle();
             if (evals % 10000 == 0) {
-                TheOptimizers.println("Evaluated " + evals + " steps");
+                player59.println("Evaluated " + evals + " steps");
             }
         }
-        TheOptimizers.print("Best solution: ");
+        player59.print("Best solution: ");
         for (double v : eval_cycle.getBestSolution()) {
-            TheOptimizers.print(v + ", ");
+            player59.print(v + ", ");
         }
-        TheOptimizers.println("");
-        TheOptimizers.println("Best fitness: " + eval_cycle.getBestFitness());
+        player59.println("");
+        player59.println("Best fitness: " + eval_cycle.getBestFitness());
         if (!SILENT_RUN)
             eval_cycle.logResults();
         best_score = eval_cycle.getBestFitness();
@@ -106,7 +106,7 @@ public class TheOptimizers
     }
 
     public static void println() {
-        TheOptimizers.print("\n");
+        player59.print("\n");
     }
 
     public static void println(Object o) {
