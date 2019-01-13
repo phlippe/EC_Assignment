@@ -5,12 +5,8 @@ import individuals.GeneTypes;
 import individuals.GenoRepresentation;
 import initialization.GenoInitializer;
 import initialization.RandomGenoInitializer;
-import mutation.GaussianMutation;
-import mutation.Mutation;
-import recombination.BlendCrossover;
-import recombination.RandomRecombination;
-import recombination.Recombination;
-import recombination.SimulatedBinaryCrossover;
+import mutation.*;
+import recombination.*;
 import selection.*;
 
 import java.util.ArrayList;
@@ -24,7 +20,9 @@ public class ExampleConfig extends Configuration
 	private int population_size = 100;
 	private int number_recombinations = 10;
 	private int parent_arity = 2;
-	private double[] variances = {0.05};
+	private double init_variance = 0.5;
+	private double sigvariance;
+	private double reset_prob = 0.0;
 
 
 	public ExampleConfig(){
@@ -44,29 +42,20 @@ public class ExampleConfig extends Configuration
 		init();
 	}
 
-	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double[] variances){
-		this(population_size, number_recombinations, parent_arity, variances, "");
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double init_variance){
+		this(population_size, number_recombinations, parent_arity, init_variance, "");
 	}
 
-	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double[] variances, String name){
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double init_variance, String name) {
+		this(population_size, number_recombinations, parent_arity, init_variance, 0.0, name);
+	}
+
+	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double init_variance, double reset_prob, String name){
 		this.population_size = population_size;
 		this.number_recombinations = number_recombinations;
 		this.parent_arity = parent_arity;
-		this.variances = variances;
-		setName(name);
-		init();
-	}
-
-	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v){
-		this(population_size, number_recombinations, parent_arity, v, "");
-	}
-
-	public ExampleConfig(int population_size, int number_recombinations, int parent_arity, double v, String name) {
-		this.population_size = population_size;
-		this.number_recombinations = number_recombinations;
-		this.parent_arity = parent_arity;
-		variances = new double[1];
-		variances[0] = v;
+		this.init_variance = init_variance;
+		this.reset_prob = reset_prob;
 		setName(name);
 		init();
 	}
@@ -74,7 +63,7 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected GenoRepresentation createRepresentation()
 	{
-		int[] num = {1};
+		int[] num = {10};
 		GeneTypes[] gene = {GeneTypes.MULTI_SIGMA};
 		GenoRepresentation genoRepresentation = new BoundRepresentation(10, num, gene, -5, 5);
 		return genoRepresentation;
@@ -83,17 +72,21 @@ public class ExampleConfig extends Configuration
 	@Override
 	protected ArrayList<Mutation> createMutationOperators()
 	{
+		GeneTypes[] multi = {GeneTypes.MULTI_SIGMA};
+		GeneTypes[] genes = {GeneTypes.OPT_GENES};
 		ArrayList<Mutation> mutations = new ArrayList<>();
-		for(double v: variances){
-			mutations.add(new GaussianMutation(v));
-		}
+		EvovleMutation evMut = new EvovleMutation(multi, population_size, 1);
+		ResetMutation resMut = new ResetMutation(multi, 0.01);//new ResetMutation(multi, 1.0, 100.0, true);
+		mutations.add(new CombinedMutation(evMut, resMut, 1 - reset_prob));
+		mutations.add(new MultiSigma(genes));
+
 		return mutations;
 	}
 
 	@Override
 	protected Recombination createRecombination()
 	{
-		Recombination recombination = new SimulatedBinaryCrossover(1.0);//new RandomRecombination();//new BlendCrossover(0.5);
+		Recombination recombination = new BlendRandomRecombination(0.0);
 		return recombination;
 	}
 
@@ -101,7 +94,7 @@ public class ExampleConfig extends Configuration
 	protected ParentSelection createParentSelection()
 	{
 		ParentSelectionStochastic parentSelectionStochastic = new ParentSelectionStochasticUniversal();
-		ParentSelection parentSelection = new ParentSigmaScalingSelection(parentSelectionStochastic, 2);
+		ParentSelection parentSelection = new TournamentSelection(parentSelectionStochastic, 25);//new ParentSigmaScalingSelection(parentSelectionStochastic, 2);
 		return parentSelection;
 	}
 
@@ -122,7 +115,7 @@ public class ExampleConfig extends Configuration
 	protected ArrayList<GenoInitializer> createAddParamsInitializer()
 	{
 		ArrayList<GenoInitializer> a = new ArrayList<>();
-		a.add(new RandomGenoInitializer(0.5, 0.5));
+		a.add(new RandomGenoInitializer(init_variance, init_variance));
 		return a;
 	}
 
@@ -143,4 +136,11 @@ public class ExampleConfig extends Configuration
 	{
 		return parent_arity;
 	}
+
+	@Override
+	public ConfigParams getParameters() {
+		return new ConfigParams(getPopulationSize(), getNumberOfRecombinations(), getParentArity());
+	}
+
+
 }

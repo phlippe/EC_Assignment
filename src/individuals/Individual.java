@@ -1,5 +1,6 @@
 package individuals;
 
+import algorithm.player59;
 import initialization.GenoInitializer;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Individual
 	private double myFitness;
 	private double age;
 	private long id;
+	private double fitnessFactor = 1.0;
+	private double distanceSum = 0.0;
 
 	public Individual(){
 		myFitness = -1;
@@ -39,6 +42,23 @@ public class Individual
 		}
 	}
 
+	public void setFitnessFactor(double factor){
+		fitnessFactor = factor;
+	}
+
+	public void setFitnessFactor(double factor, double sum_distances){
+		setFitnessFactor(factor);
+		distanceSum = sum_distances;
+	}
+
+	public double getFitnessFactor(){
+		return fitnessFactor;
+	}
+
+	public double getDistanceSum(){
+		return distanceSum;
+	}
+
 	public void initialize(GenoInitializer gene_init){
 		gene_init.initializeArray(genes);
 	}
@@ -50,6 +70,7 @@ public class Individual
 		}
 	}
 
+
 	public double[] getGenotype(){
 		return genes;
 	}
@@ -60,7 +81,7 @@ public class Individual
 
 	public double[] getAdditionalParams(int index){
 		if(index >= add_params.size() || index < 0){
-			System.out.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
+			player59.println("ERROR (class Individual): Index is out of boundaries for individual. Index: "+index+", Size: "+add_params);
 			//System.exit(1);
 		}
 		return add_params.get(index);
@@ -69,18 +90,18 @@ public class Individual
 	public double[] getAdditionalParams(GeneTypes type){
 		int index = myRepr.getParamPosition(type);
 		if(index < 0){
-			System.out.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
-			System.out.print("Implemented in current initialization: ");
+			player59.println("ERROR (class Individual): Unknown gene type requested: "+type.name());
+			player59.print("Implemented in current initialization: ");
 			if(myRepr.gene_types.length == 0){
-				System.out.print("---");
+				player59.print("---");
 			}
 			else{
 				for (GeneTypes implType : myRepr.gene_types)
 				{
-					System.out.print(implType.name() + ", ");
+					player59.print(implType.name() + ", ");
 				}
 			}
-			System.out.println("");
+			player59.println("");
 		}
 		return getAdditionalParams(index);
 	}
@@ -90,6 +111,10 @@ public class Individual
 	}
 
 	public double getFitness(){
+		return myFitness * fitnessFactor;
+	}
+
+	public double getPureFitness(){
 		return myFitness;
 	}
 
@@ -123,6 +148,42 @@ public class Individual
 
 	public long getID(){
 		return id;
+	}
+
+	public double getDistance(Individual individual){
+		double[] others_genes = individual.getGenotype();
+		return getDistance(others_genes);
+	}
+
+	public double getDistance(double[] others_genes){
+		double dist = 0.0;
+		for(int k=0;k<genes.length;k++)
+			dist += Math.pow(others_genes[k] - genes[k], 2);
+		dist = Math.sqrt(dist);
+		return dist;
+	}
+
+	public double getDistance(Individual individual, double[] weights){
+		double[] others_genes = individual.getGenotype();
+		double dist = 0.0;
+		for(int k=0;k<genes.length;k++)
+			dist += Math.pow((others_genes[k] - genes[k]) / weights[k], 2);
+		dist = Math.sqrt(dist);
+		return dist;
+	}
+
+	public double getDistance(Individual individual, double max_dist){
+		double[] others_genes = individual.getGenotype();
+		double dist = 0.0;
+		double gene_dist = 0.0;
+		for(int k=0;k<genes.length;k++) {
+			gene_dist = (others_genes[k] - genes[k]);
+			if (gene_dist > max_dist)
+				return gene_dist;
+			dist += gene_dist * gene_dist;
+		}
+		dist = Math.sqrt(dist);
+		return dist;
 	}
 
 }

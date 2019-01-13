@@ -1,23 +1,23 @@
 package selection;
 
-import algorithm.TheOptimizers;
-import evaluation.BentCigarFunction;
-import individuals.BoundRepresentation;
-import individuals.GeneTypes;
 import individuals.Individual;
 import individuals.Population;
-import initialization.RandomGenoInitializer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class RankingSelection extends ParentSelection{
 
+    public enum RankingType{
+        LINEAR,
+        EXPONENTIAL
+    }
+
     private ArrayList<Individual> ranking;
     private Double s;
-    private String RankingSelectionType;
+    private RankingType RankingSelectionType;
 
-    public RankingSelection(ParentSelectionStochastic stochastic,double s, String RankingSelectionType) {
+    public RankingSelection(ParentSelectionStochastic stochastic,double s, RankingType RankingSelectionType) {
         super(stochastic);
         this.s = s;
         this.RankingSelectionType = RankingSelectionType;
@@ -46,10 +46,10 @@ public class RankingSelection extends ParentSelection{
                 IndividualRank=i;
             }
         }
-        if (RankingSelectionType.equals("Linear")){
+        if (RankingSelectionType == RankingType.LINEAR){
             Pi=(2-s)/ranking.size()+(2*IndividualRank*(s-1))/(ranking.size()*(ranking.size()-1));
         }
-        if (RankingSelectionType.equals("Exponential")){
+        if (RankingSelectionType == RankingType.EXPONENTIAL){
             Double sum=0.0;
             for (int i=0 ;i<ranking.size();i++){
                 sum=sum+(1-java.lang.Math.exp(-1.00*i));

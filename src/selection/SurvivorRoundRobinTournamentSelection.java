@@ -1,7 +1,6 @@
 package selection;
 
-import algorithm.TheOptimizers;
-import com.sun.org.apache.bcel.internal.generic.POP;
+import algorithm.player59;
 import individuals.Individual;
 import individuals.Population;
 
@@ -61,7 +60,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 					if(tournament_pos[c_index].get(cont_pos).obj.id == tournament_pos[c_index_2].get(cont_pos).obj.id){
 						int switch_index = findSwitchPosition(tournament_pos[c_index_2].get(cont_pos).obj.id, c_index_2);
 						if(switch_index == -1){
-							System.out.println("ERROR (SurvivorRoundRobinTournamentSelecion): Switch index was -1");
+							player59.println("ERROR (SurvivorRoundRobinTournamentSelecion): Switch index was -1");
 						}
 						RandomObj<TournamentContestant> tmp = tournament_pos[c_index_2].get(switch_index);
 						tournament_pos[c_index_2].set(switch_index, tournament_pos[c_index_2].get(cont_pos));
@@ -74,7 +73,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 		//System.out.println("Contest");
 		for(int cont_pos=0;cont_pos<size_population + size_children; cont_pos++){
 			//System.out.print(cont_pos + ": ");
-			double best_fitness = -1.0;
+			double best_fitness = -Double.MAX_VALUE;
 			int best_index = -1;
 			for(int c_index=0;c_index<tournament_pos.length;c_index++){
 				//System.out.print(tournament_pos[c_index].get(cont_pos).obj.id + " [" + tournament_pos[c_index].get(cont_pos).obj.score + "]" + " vs. ");
@@ -84,6 +83,16 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 				}
 			}
 			//System.out.println(" -> Winner: " + tournament_pos[best_index].get(cont_pos).obj.id);
+			if(best_index == -1){
+				System.out.println("Found best index = -1 with best fitness "+ best_fitness+". Logging competitors: ");
+				for(int c_index=0;c_index<tournament_pos.length;c_index++) {
+					System.out.print(tournament_pos[c_index].get(cont_pos).obj.score + " (");
+					for(int i=0;i<population.size();i++)
+						if(population.get(i).getID() == tournament_pos[c_index].get(cont_pos).obj.id) {
+							System.out.print(population.get(i).getPureFitness() + ", " + population.get(i).getFitnessFactor() + ") " + " vs ");
+						}
+				}
+			}
 			tournament_pos[best_index].get(cont_pos).obj.increaseWins();
 		}
 	}
@@ -107,7 +116,7 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 	{
 		for(TournamentContestant c: contestants){
 			if(individual.getID() == c.id){
-				return c.wins;
+				return c.wins + 1e-5 * player59.rnd_.nextDouble();
 			}
 		}
 		return -1;
@@ -126,11 +135,11 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 
 		public RandomObj(T obj){
 			this.obj = obj;
-			rnd_score = TheOptimizers.rnd_.nextDouble();
+			rnd_score = player59.rnd_.nextDouble();
 		}
 
 		private void randomize_score(){
-			rnd_score = TheOptimizers.rnd_.nextDouble();
+			rnd_score = player59.rnd_.nextDouble();
 		}
 
 		public int compareTo(RandomObj p2){
@@ -184,32 +193,32 @@ public class SurvivorRoundRobinTournamentSelection extends SurvivorSelection
 	}
 
 	public static void main(String args[]){
-		TheOptimizers opt = new TheOptimizers();
+		player59 opt = new player59();
 		opt.setSeed(1);
 		int population_size = 10;
 		Population p = new Population(population_size);
-		System.out.print("Population: ");
+		player59.print("Population: ");
 		for(int i=0;i<population_size;i++){
 			Individual ind = new Individual();
-			ind.setFitness(i); // TheOptimizers.rnd_.nextDouble()*10
+			ind.setFitness(i); // player59.rnd_.nextDouble()*10
 			p.set(i, ind);
-			System.out.print(ind.getFitness() + ", ");
+			player59.print(ind.getFitness() + ", ");
 		}
-		System.out.println();
+		player59.println();
 		ArrayList<Individual> children = new ArrayList<>();
-		System.out.print("Children: ");
+		player59.print("Children: ");
 		for(int i=0;i<2;i++){
 			Individual ind = new Individual();
-			ind.setFitness(TheOptimizers.rnd_.nextDouble()*10);
+			ind.setFitness(player59.rnd_.nextDouble()*10);
 			children.add(ind);
-			System.out.print(ind.getFitness() + ", ");
+			player59.print(ind.getFitness() + ", ");
 		}
 		SurvivorRoundRobinTournamentSelection s = new SurvivorRoundRobinTournamentSelection(5);
 		s.prepareSelection(p, children);
-		System.out.println("Fitness of population: ");
+		player59.println("Fitness of population: ");
 		for(int i=0;i<population_size;i++){
 			double rate = s.rateIndividual(p.get(i), false);
-			System.out.println(rate + ", ");
+			player59.println(rate + ", ");
 		}
 	}
 }

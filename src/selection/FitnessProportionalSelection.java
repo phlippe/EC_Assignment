@@ -1,6 +1,6 @@
 package selection;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 import evaluation.BentCigarFunction;
 import individuals.BoundRepresentation;
 import individuals.GeneTypes;
@@ -75,7 +75,7 @@ public class FitnessProportionalSelection extends ParentSelection{
     }
 
     public static void main(String[] test){
-        TheOptimizers opt = new TheOptimizers();
+        player59 opt = new player59();
         opt.setEvaluation(new BentCigarFunction());
         opt.setSeed(1);
         ParentSelectionStochastic b = new ParentSelectionStochasticRoulette();
@@ -84,12 +84,12 @@ public class FitnessProportionalSelection extends ParentSelection{
         p.initialize(new BoundRepresentation(10, new int[0], new GeneTypes[0], -5,5), new RandomGenoInitializer());
         for(int i=0;i<4;i++){
             p.get(i).setFitness(i);
-            System.out.println(p.get(i).getFitness());
-            System.out.println(p.get(i).getID());
+            player59.println(p.get(i).getFitness());
+            player59.println(p.get(i).getID());
         }
         a.prepareSelection(p);
         for(int j=0; j<p.size();j++){
-            System.out.println(a.getSelectionProbability(p.get(j)));
+            player59.println(a.getSelectionProbability(p.get(j)));
         }
     }
 }

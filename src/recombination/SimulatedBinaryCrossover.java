@@ -1,6 +1,6 @@
 package recombination;
 
-import algorithm.TheOptimizers;
+import algorithm.player59;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public class SimulatedBinaryCrossover
 
         int number_parents = parent_genes.size();
         for (int index_gene = 0; index_gene < number_param_genes; index_gene++) {
-            double rand = TheOptimizers.rnd_.nextDouble();
+            double rand = player59.rnd_.nextDouble();
             double beta;
             if(rand <= 0.5){
                 beta = 2.0 * rand;
@@ -63,16 +63,16 @@ public class SimulatedBinaryCrossover
         parent_genes.add(parent_2);
         double[][] children = new double[2][parent_1.length];
         int number_param_genes = parent_1.length;
-        TheOptimizers opt = new TheOptimizers();
+        player59 opt = new player59();
         opt.setSeed(1);
         SimulatedBinaryCrossover a = new SimulatedBinaryCrossover(1.0);
         a.applyRecombination(parent_genes, children, number_param_genes);
         for(int i=0;i<children.length;i++){
-            System.out.print("Child " + i + ": ");
+            player59.print("Child " + i + ": ");
             for(int j=0;j<children[i].length;j++){
-                System.out.print(children[i][j] + ", ");
+                player59.print(children[i][j] + ", ");
             }
-            System.out.println();
+            player59.println("");
         }
     }
 }
